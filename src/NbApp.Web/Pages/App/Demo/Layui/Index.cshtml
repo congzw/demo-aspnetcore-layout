@@ -1,0 +1,11 @@
+﻿@page
+@{
+    var request = this.Request;
+    var currentPath = $"{request.PathBase}{request.Path}";
+}
+<div class="card m-3">
+    <h5 class="card-header">@currentPath</h5>
+    <div class="card-body">
+        @this.ViewContext.ExecutingFilePath
+    </div>
+</div>
