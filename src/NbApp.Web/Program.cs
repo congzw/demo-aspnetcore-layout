@@ -41,7 +41,6 @@ namespace NbApp.Web
 
 
             builder.Services.AddTransient<MdDocFileService>();
-            builder.Services.AddSingleton<MenuService>();
             var app = builder.Build();
 
             app.UseDeveloperExceptionPage();

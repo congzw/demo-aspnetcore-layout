@@ -1,0 +1,87 @@
+﻿@using Microsoft.AspNetCore.Hosting;
+@using Microsoft.AspNetCore.Html;
+@using NbApp.Srvs.Menus;
+@model List<PageMenuTree>
+@inject IWebHostEnvironment webEnv;
+@{
+    var menuTrees = Model;
+    var currentPath = this.ViewBag.currentPath as string;
+    if (currentPath == null)
+    {
+        var request = this.ViewContext.HttpContext.Request;
+        currentPath = $"{request.PathBase}{request.Path}".ToLower();
+    }
+}
+@functions {
+
+    public void RenderDropdownMenu(PageMenuTree item, string currentPath)
+    {
+        var isCurrent = currentPath.StartsWith(item.Herf, StringComparison.OrdinalIgnoreCase);
+        var itemCss = isCurrent ? "nav-link dropdown-toggle selected" : "nav-link dropdown-toggle";
+        //目录节点
+        <li class="nav-item dropdown">
+            <a class="@itemCss" href="@item.Herf" id="@item.Id" data-bs-toggle="dropdown">@item.Title</a>
+            <ul class="dropdown-menu" aria-labelledby="@item.Id">
+                @foreach (var subItem in item.Children)
+                {
+                    RenderSubMenus(subItem, 0, currentPath);
+                }
+            </ul>
+        </li>
+    }
+
+    private void RenderSubMenus(PageMenuTree item, int deep, string currentPath)
+    {
+        var itemPaddingStyle = $"padding-left:{(int)(20 * deep)}px";
+        //var itemCss = item.Children.Count == 0 ? "dropdown-item" : "dropdown-item disabled";
+        var isCurrent = currentPath.StartsWith(item.Herf, StringComparison.OrdinalIgnoreCase);
+        var itemCss = isCurrent ? "dropdown-item selected" : "dropdown-item";
+        deep++;
+        <li style="@itemPaddingStyle">
+            <a class="@itemCss" href="@item.Herf">
+                @{
+                    RenderPageIconIf(item);
+                }
+            </a>
+        </li>
+        @foreach (var subItem in item.Children)
+        {
+            RenderSubMenus(subItem, deep, currentPath);
+        }
+    }
+
+    private void RenderPageIconIf(PageMenuTree item)
+    {
+        if (item.Children.Count == 0)
+        {
+            <text>└──</text>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file" aria-hidden="true"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+            <text>@item.Title</text>
+        }
+        else
+        {
+            <text>└──@item.Title</text>
+        }
+    }
+}
+<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+    <ul class="navbar-nav flex-grow-1 bd-navbar">
+
+        @if (currentPath == "/")
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark selected" href="/">Home</a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/">Home</a>
+            </li>
+        }
+        @foreach (var item in menuTrees)
+        {
+            RenderDropdownMenu(item, currentPath);
+        }
+    </ul>
+</div>

@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.Hosting;
+@using Microsoft.AspNetCore.Html;
+@using NbApp.Srvs.Menus;
+@model List<PageMenuTree>
+@{
+    var items = Model;
+    var currentPath = this.ViewBag.currentPath as string;
+    if (currentPath == null)
+    {
+        var request = this.ViewContext.HttpContext.Request;
+        currentPath = $"{request.PathBase}{request.Path}".ToLower();
+    }
+}
+@functions {
+
+    public void RenderItems(List<PageMenuTree> items, string currentPath)
+    {
+        if (currentPath != "/")
+        {
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+        }
+        else
+        {
+            <li class="breadcrumb-item active" aria-current="page">Home</li>
+        }
+        RenderItems(items, currentPath, 0);
+    }
+
+    private void RenderItems(List<PageMenuTree> items, string currentPath, int deep)
+    {
+        @foreach (var item in items)
+        {
+            var isCurrent = currentPath.Equals(item.Herf, StringComparison.OrdinalIgnoreCase);
+            if (isCurrent)
+            {
+                <li class="breadcrumb-item active" aria-current="page">@item.Title</li>
+                return;
+            }
+
+            var startWith = currentPath.StartsWith(item.Herf, StringComparison.OrdinalIgnoreCase);
+            if (startWith)
+            {
+                if (item.Children.Count > 0)
+                {
+                    if (item.LinkDisabled)
+                    {
+                        <li class="breadcrumb-item active" aria-current="page">@item.Title</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item"><a href="@item.Herf">@item.Title</a></li>
+                    }
+                    RenderItems(item.Children, currentPath, ++deep);
+                }
+                else
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@item.Title</li>
+                }
+            }
+        }
+    }
+}
+<header>
+    <div class="container">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end">
+                @{
+                    RenderItems(items, currentPath);
+                }
+            </ol>
+        </nav>
+    </div>
+</header>

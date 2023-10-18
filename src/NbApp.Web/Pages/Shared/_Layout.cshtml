@@ -1,9 +1,16 @@
-﻿@inject AppInfoVo appInfoVo
+﻿@using Microsoft.AspNetCore.Hosting;
+@using NbApp.Srvs.Menus;
+@inject AppInfoVo appInfoVo
+@inject IWebHostEnvironment webEnv;
 @{
     var appName = appInfoVo.AppName;
-    var request = this.Context.Request;
-    var currentPath = $"{request.PathBase}{request.Path}";
+    var currentPath = this.ViewBag.currentPath as string;
+
     var title = appName + $" - [{ViewData["Title"] ?? currentPath}]";
+
+    var pageLocation = System.IO.Path.Combine(webEnv.ContentRootPath, "Pages", "App");
+    var pageMenuTree = PageMenuTreeHelper.Instance.Load(pageLocation);
+    var menuTrees = pageMenuTree.Children;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -13,6 +20,16 @@
     <title>@title</title>
     <link href="~/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/libs/prism/theme/ocodia.css" rel="stylesheet" />
+    <style>
+        .navbar-nav .nav-link.selected {
+            font-weight: bolder;
+        }
+
+        .navbar-nav .dropdown-item.selected {
+            font-weight: bolder;
+            font-size: larger;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -23,10 +40,12 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <partial name="_AutoPageMenu"></partial>
+                <partial name="_PageMenu" model="menuTrees"></partial>
             </div>
         </nav>
     </header>
+    <partial name="_PageBreadcrumb" model="menuTrees"></partial>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
