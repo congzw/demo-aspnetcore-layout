@@ -1,0 +1,14 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <MyBuildInfoDirectory>$(MSBuildThisFileDirectory)</MyBuildInfoDirectory>
+    <MyBuildInfoFile>$(MSBuildThisFile)</MyBuildInfoFile>
+    <MyProjectDirectory>$(MSBuildProjectDirectory)</MyProjectDirectory>
+    <MyProjectFile>$(MSBuildProjectFile)</MyProjectFile>
+    <MyAssemblyPrefix>DemoLayout</MyAssemblyPrefix>
+    <SourceRevisionId>$(BuildCommit)</SourceRevisionId>
+    <Version Condition="$(Version) == ''">0.1.0</Version>
+    <TargetFramework Condition="$(TargetFramework) == ''">net6.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>

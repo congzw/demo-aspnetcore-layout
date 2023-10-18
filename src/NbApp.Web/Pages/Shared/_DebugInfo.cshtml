@@ -1,0 +1,22 @@
+﻿@inject AppInfoVo appInfoVo
+@{
+    var appName = appInfoVo.AppName;
+    var request = this.Context.Request;
+    var currentPath = $"{request.PathBase}{request.Path}";
+    var currentPathQuery = $"{request.PathBase}{request.Path}{request.QueryString}";
+    var title = appName + $" - [{ViewData["Title"] ?? currentPath}]";
+    var debugInfo = new
+    {
+        page = this.ViewContext.View.Path,
+        path = currentPath,
+        pathQuery = currentPathQuery
+    };
+}
+@if (appInfoVo.DebugMode)
+{
+    <script>
+        var debugInfo = @Html.Raw(debugInfo.ToJson(true));
+        debugInfo.hash = window.location.hash;
+        console.log("debugInfo", debugInfo);
+    </script>
+}
