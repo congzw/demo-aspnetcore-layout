@@ -18,6 +18,11 @@
     {
         var isCurrent = currentPath.StartsWith(item.Herf, StringComparison.OrdinalIgnoreCase);
         var itemCss = isCurrent ? "nav-link dropdown-toggle selected" : "nav-link dropdown-toggle";
+        if (item.Children.Count == 0)
+        {
+            return;
+        }
+
         //目录节点
         <li class="nav-item dropdown">
             <a class="@itemCss" href="@item.Herf" id="@item.Id" data-bs-toggle="dropdown">@item.Title</a>
