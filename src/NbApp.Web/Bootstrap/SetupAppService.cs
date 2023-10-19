@@ -7,6 +7,7 @@ namespace NbApp.Web.Bootstrap
     {
         public static IServiceCollection AddTheAppService(IServiceCollection services)
         {
+            //todo: load from setting
             services.AddSingleton<AppInfoVo>();
             return services;
         }

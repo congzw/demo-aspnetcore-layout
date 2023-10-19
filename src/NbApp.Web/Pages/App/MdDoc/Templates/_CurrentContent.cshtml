@@ -1,0 +1,35 @@
+﻿@using NbApp.Srvs.MdDocs;
+@using NbApp.Srvs.Menus;
+@model PageMenuTree
+@{
+    var currentMenuTree = Model;
+    var currentPath = this.ViewBag.currentPath as string;
+    var parentPath = currentMenuTree.GuessParentHerf();
+    var mdDocFilesJson = currentMenuTree.GetAllDescendants().Select(x => x.Herf).ToJson(true);
+    var date = "";
+    var fileContent = "";
+    var htmlContent = "";
+    var fileInfo = new System.IO.FileInfo(currentMenuTree.Tag.ToString());
+    if (fileInfo.Exists)
+    {
+        date = fileInfo.LastWriteTime.ToShortDateString();
+        fileContent = currentMenuTree.LoadFileContent();
+        htmlContent = Markdig.Markdown.ToHtml(fileContent);
+    }
+}
+<article class="blog-post">
+    <h2 class="blog-post-title">@currentMenuTree.Title</h2>
+    <p class="blog-post-meta">
+        <span style="color: cornflowerblue;">
+            <i class="bi-alarm"></i>
+            @date
+        </span>
+        <a class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="@parentPath" title="return to parent">
+            back to parent
+            <i class="bi-folder-symlink"></i>
+        </a>
+    </p>
+    <hr>
+    <pre><code class="language-json">@Html.Raw(currentMenuTree.ToJson(true))</code></pre>
+    @Html.Raw(htmlContent)
+</article>

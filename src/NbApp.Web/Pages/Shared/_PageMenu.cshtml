@@ -1,9 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Hosting;
 @using Microsoft.AspNetCore.Html;
+@using Microsoft.Extensions.Logging;
 @using NbApp.Srvs.Menus;
 @model List<PageMenuTree>
 @inject IWebHostEnvironment webEnv;
 @{
+    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
     var menuTrees = Model;
     var currentPath = this.ViewBag.currentPath as string;
     if (currentPath == null)
@@ -14,11 +16,18 @@
 }
 @functions {
 
+    public void RenderFixMenu(string herf, string title, string currentPath)
+    {
+        var theCss = currentPath.Equals(herf, StringComparison.OrdinalIgnoreCase) ? 
+        "nav-link text-dark selected" : "nav-link text-dark";
+        <li class="nav-item"><a class="@theCss" href="@herf">@title</a></li>
+    }
+
     public void RenderDropdownMenu(PageMenuTree item, string currentPath)
     {
         var isCurrent = currentPath.StartsWith(item.Herf, StringComparison.OrdinalIgnoreCase);
         var itemCss = isCurrent ? "nav-link dropdown-toggle selected" : "nav-link dropdown-toggle";
-        if (item.Children.Count == 0)
+        if (item.TotalFilesCount() == 0)
         {
             return;
         }
@@ -71,22 +80,16 @@
 }
 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
     <ul class="navbar-nav flex-grow-1 bd-navbar">
-
-        @if (currentPath == "/")
-        {
-            <li class="nav-item">
-                <a class="nav-link text-dark selected" href="/">Home</a>
-            </li>
+        @{
+            RenderFixMenu("/", "Home", currentPath);
+            RenderFixMenu("/app/md-doc", "Articles", currentPath);
         }
-        else
+        @if (appInfoVo.AutoLoadPageMenus)
         {
-            <li class="nav-item">
-                <a class="nav-link text-dark" href="/">Home</a>
-            </li>
-        }
-        @foreach (var item in menuTrees)
-        {
-            RenderDropdownMenu(item, currentPath);
+            foreach (var item in menuTrees)
+            {
+                RenderDropdownMenu(item, currentPath);
+            }
         }
     </ul>
 </div>

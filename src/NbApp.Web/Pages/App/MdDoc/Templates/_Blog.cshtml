@@ -1,0 +1,93 @@
+﻿@page "/app/md-doc/{**path=index.md}"
+@using NbApp.Srvs.MdDocs;
+@using NbApp.Srvs.Menus;
+@{
+    var currentPath = this.ViewBag.currentPath as string;
+    var rootDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "md-files");
+    var rootDirInfo = new System.IO.DirectoryInfo(rootDir);
+
+    var rootMenuTree = PageMenuTreeHelper.Instance.LoadForMdFiles("/app", "md-doc", rootDirInfo);
+    var rootMenuTrees = rootMenuTree.Children;
+
+    var currentMenuTree = rootMenuTree.GetAllDescendants().FirstOrDefault(x => x.Herf.MyEquals(currentPath)) ?? rootMenuTree;
+    var subMenuTrees = currentMenuTree.Children;
+
+    var currentBlogTitle = currentMenuTree.Title;
+    var totalFilesCount = "";
+    if (currentMenuTree.IsDirectory)
+    {
+        totalFilesCount = currentMenuTree.TotalFilesCount().ToString();
+    }
+
+    var currentBlogPath = currentMenuTree.Herf;
+}
+@section Styles {
+    <link href="~/app/css/blog.css" rel="stylesheet" />
+}
+
+<div>
+    <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
+        <div class="col-md-6 px-0">
+            <h1>
+                <span class="display-4 fst-italic position-relative">
+                    @currentBlogTitle
+                    @if (!string.IsNullOrWhiteSpace(totalFilesCount))
+                    {
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @totalFilesCount
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    }
+                </span>
+            </h1>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-md-8">
+            <h3 class="pb-4 mb-4 fst-italic border-bottom">
+                @currentBlogPath
+            </h3>
+
+            <div class="card">
+                <div class="card-body">
+                    @if (currentMenuTree.IsDirectory)
+                    {
+                        <partial name="_CurrentTreeTable" model="currentMenuTree"></partial>
+                    }
+                    else
+                    {
+                        <partial name="_CurrentContent" model="currentMenuTree"></partial>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <div class="p-4 mb-3 bg-light rounded">
+                    <h4 class="fst-italic">About</h4>
+                    <p class="mb-0">
+                        ...
+                    </p>
+                </div>
+
+                <div class="p-4">
+                    <h4 class="fst-italic">Articles</h4>
+                    <ul class="mb-0">
+                        <partial name="_MdMenu" model="rootMenuTrees"></partial>
+                    </ul>
+                </div>
+
+                <div class="p-4">
+                    <h4 class="fst-italic">Links</h4>
+                    <ol class="list-unstyled">
+                        <li><a href="http://github.com/" target="_blank">GitHub</a></li>
+                        <li><a href="https://cn.bing.com/" target="_blank">Bing</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

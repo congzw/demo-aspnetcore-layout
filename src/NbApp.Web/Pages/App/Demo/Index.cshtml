@@ -1,7 +1,7 @@
 ﻿@page
 @{
     var request = this.Request;
-    var currentPath = this.ViewBag.currentPath as string ?? $"{request.PathBase}{request.Path}" + " :::";
+    var currentPath = this.ViewBag.currentPath as string;
 }
 <div class="card m-3">
     <h5 class="card-header">@currentPath</h5>

@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Hosting;
+@using Microsoft.AspNetCore.Html;
+@using Microsoft.Extensions.Logging;
+@using NbApp.Srvs.Menus;
+@model List<PageMenuTree>
+@inject IWebHostEnvironment webEnv;
+@{
+    var menuTrees = Model;
+    var currentPath = this.ViewBag.currentPath as string;
+}
+@functions {
+
+    public void RenderMdFileMenus(List<PageMenuTree> items, string currentPath)
+    {
+        foreach (var item in items)
+        {
+            RenderMdFileMenu(item, currentPath);
+        }
+    }
+
+    public void RenderMdFileMenu(PageMenuTree item, string currentPath)
+    {
+        <li>
+            @if (item.IsDirectory)
+            {
+                //<span href="@item.Herf">@item.Title</span>
+                <a href="@item.Herf">@item.Title</a>
+            }
+            else
+            {
+                <a href="@item.Herf">@item.Title</a>
+            }
+            @if (item.GetAllDescendants().Count() > 0)
+            {
+                <ul class="mb-0">
+                    @foreach (var c in item.Children)
+                    {
+                        RenderMdFileMenu(c, currentPath);
+                    }
+                </ul>
+            }
+        </li>
+    }
+}
+@{
+    RenderMdFileMenus(menuTrees, currentPath);
+}

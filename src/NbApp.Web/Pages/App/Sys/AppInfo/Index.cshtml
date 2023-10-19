@@ -1,12 +1,61 @@
 ﻿@page
+@using RI = System.Runtime.InteropServices.RuntimeInformation;
+@using System.Diagnostics;
 @inject AppInfoVo appInfoVo
 @{
-    var appName = appInfoVo.AppName;
-    var appInfoJson = appInfoVo.ToJson(true);
+    var currentProcess = Process.GetCurrentProcess();
+
+    var runtimeInfo = new
+    {
+        RI.FrameworkDescription,
+        RI.OSDescription,
+        RI.OSArchitecture,
+        RI.ProcessArchitecture,
+        RI.RuntimeIdentifier,
+        AppStartAt = currentProcess.StartTime,
+        AppStartDuration = (DateTime.Now - currentProcess.StartTime).ToString(@"hh\:mm\:ss"),
+        ProcessId = Environment.ProcessId,
+        CommandLineArgs = Environment.GetCommandLineArgs(),
+        CurrentDirectory = Environment.CurrentDirectory
+    };
+
+    var envInfo = Environment.GetEnvironmentVariables();
+
+    var tabDict = new Dictionary<string, object>();
+    var firstKey = "runtime-info";
+    tabDict["runtime-info"] = runtimeInfo;
+    tabDict["app-info"] = appInfoVo;
+    tabDict["env-info"] = envInfo;
 }
-<div class="card m-3">
-  <h5 class="card-header">AppInfo</h5>
-    <div class="card-body">
-        <pre><code class="language-json">@Html.Raw(appInfoJson)</code></pre>
-  </div>
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        @foreach (var tabItem in tabDict)
+        {
+            var selected = tabItem.Key == firstKey;
+            var tabCss = selected ? "nav-link active" : "nav-link";
+            var tabId = $"nav-tab-{tabItem.Key}";
+            var tabContentId = $"nav-content-{tabItem.Key}";
+            <button class="@tabCss" id="@tabId" data-bs-toggle="tab" data-bs-target="#@tabContentId" type="button" role="tab" aria-controls="@tabContentId" aria-selected="@selected.ToString().ToLower()">
+                @tabItem.Key
+            </button>
+        }
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    @foreach (var tabItem in tabDict)
+    {
+        var selected = tabItem.Key == firstKey;
+        var currentCss = selected ? "tab-pane fade show active" : "tab-pane fade";
+        var tabId = $"nav-tab-{tabItem.Key}";
+        var tabContentId = $"nav-content-{tabItem.Key}";
+        <div class="@currentCss" id="@tabContentId" role="tabpanel" aria-labelledby="@tabId" tabindex="0">
+            <div class="card m-3">
+                <h5 class="card-header">@tabItem.Key</h5>
+                <div class="card-body">
+                    <pre><code class="language-json">@Html.Raw(tabItem.Value.ToJson(true))</code></pre>
+                </div>
+            </div>
+        </div>
+    }
 </div>

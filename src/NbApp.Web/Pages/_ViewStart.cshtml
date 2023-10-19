@@ -1,5 +1,7 @@
-﻿@{
+﻿@inject AppInfoVo appInfoVo
+@{
+    ViewBag.appInfoVo = appInfoVo;
     Layout = "_Layout";
     var request = this.ViewContext.HttpContext.Request;
-    ViewBag.currentPath = $"{request.PathBase}{request.Path}".ToLower();
+    ViewBag.currentPath = $"{request.PathBase}{request.Path}".TrimEnd('/').ToLower();
 }

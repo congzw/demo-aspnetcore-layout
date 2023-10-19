@@ -1,0 +1,56 @@
+﻿@using NbApp.Srvs.MdDocs;
+@using NbApp.Srvs.Menus;
+@model PageMenuTree
+@{
+    var currentMenuTree = Model;
+    var currentPath = this.ViewBag.currentPath as string;
+    //var subMenuTrees = currentMenuTree.Children;
+    var subMenuTrees = currentMenuTree.GetAllDescendants().ToList();
+    var parentPath = currentMenuTree.GuessParentHerf();
+    var returnTip = "return to parent";
+    var icon = "bi-folder-symlink";
+    if (parentPath == "/app")
+    {
+        //fix: app/{any} is the end
+        parentPath = "javascript:void(0)";
+        returnTip = "this is the root";
+        icon = "bi-emoji-sunglasses";
+    }
+}
+<div>
+    <a class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="@parentPath" title="@returnTip">
+        @returnTip
+        <i class="@icon"></i>
+    </a>
+</div>
+<hr/>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Files</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < subMenuTrees.Count; i++)
+        {
+            var subMenuTree = subMenuTrees[i];
+            var totalFilesCount = subMenuTree.TotalFilesCount().ToString();            
+            <tr>
+                <th scope="row">@(i + 1)</th>
+                <td><a href="@subMenuTree.Herf">@subMenuTree.Herf</a></td>
+                <td>
+                    @if (subMenuTree.IsDirectory)
+                    {
+                        <text>@totalFilesCount</text>
+                    }
+                    else
+                    {
+                        <i class="bi-filetype-md"></i>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

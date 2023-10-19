@@ -10,15 +10,10 @@
     </div>
 </div>
 
-<vc:card header="X" body="XXX"></vc:card>
+<vc:card header="Foo1" body="Hello"></vc:card>
 
 @await Component.InvokeAsync("Card",
                      new {
-                         Header = "A2",
-                         Body = "222"
-                     })
-@await Component.InvokeAsync("Card",
-                     new {
-                         Header = "A1",
-                         Body = DateTime.Now.ToString()
+                         Header = "Foo2",
+                         Body = "Hello "+DateTime.Now.ToString()
                      })

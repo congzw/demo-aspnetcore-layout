@@ -1,39 +1,48 @@
 ﻿@using Microsoft.AspNetCore.Hosting;
 @using NbApp.Srvs.Menus;
-@inject AppInfoVo appInfoVo
 @inject IWebHostEnvironment webEnv;
 @{
+    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
     var appName = appInfoVo.AppName;
     var currentPath = this.ViewBag.currentPath as string;
 
     var title = appName + $" - [{ViewData["Title"] ?? currentPath}]";
 
     var pageLocation = System.IO.Path.Combine(webEnv.ContentRootPath, "Pages", "App");
-    var pageMenuTree = PageMenuTreeHelper.Instance.Load(pageLocation);
+    var pageDirInfo = new System.IO.DirectoryInfo(pageLocation);
+    var pageMenuTree = PageMenuTreeHelper.Instance.LoadForRazorPages("/", "app", pageDirInfo);
     var menuTrees = pageMenuTree.Children;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@title</title>
     <link href="~/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/libs/boostrap-icons/bootstrap-icons.min.css" rel="stylesheet" />
     <link href="~/libs/prism/theme/ocodia.css" rel="stylesheet" />
     <style>
         .navbar-nav .nav-link.selected {
             font-weight: bolder;
         }
-
         .navbar-nav .dropdown-item.selected {
             font-weight: bolder;
             font-size: larger;
         }
+
+        /* Show it is fixed to the top */
+        body {
+            min-height: 75rem;
+            padding-top: 4.5rem;
+        }
     </style>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
+<body class="d-flex flex-column h-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">@appName</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -52,7 +61,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer mt-auto py-3 bg-light">
         <div class="container">
             <span> &copy; 2023 - @appName</span>
         </div>

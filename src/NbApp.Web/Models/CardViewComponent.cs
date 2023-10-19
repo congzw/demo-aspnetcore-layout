@@ -17,8 +17,13 @@ namespace NbApp.Web.Models
         ///Pages/Shared/Components/{View Component Name}/{View Name}
         ///Areas/{Area Name}/Views/Shared/Components/{View Component Name}/{View Name}
 
-        //We recommend naming the view file Default.cshtml
-        //PriorityList => "Views/Shared/Components/PriorityList/Default.cshtml"
+        //recommend naming the view file Default.cshtml
+        //Foo => "Views/Shared/Components/Foo/Default.cshtml"
+
+        //Open the _ViewImports.cshtml file and add the following line to the existing code:
+        //@addTagHelper *, DemoLayout.Web
+        //Then we can use tag as:
+        //<vc:card header="A1" body="AAA"></vc:card>
 
         public async Task<IViewComponentResult> InvokeAsync(string header, string body)
         {
