@@ -13,8 +13,12 @@ namespace NbApp.Srvs.Menus
         public string Title { get; set; }
         public string Icon { get; set; }
         public string Herf { get; set; }
-        public object Tag { get; set; }
-        public bool IsDirectory { get; set; }
+
+        internal FileSystemInfo FileSystemInfo { get; set; }
+        public FileSystemInfo GetFileSystemInfo() => FileSystemInfo;
+        public string GetFullPath() => FileSystemInfo?.FullName;
+        public bool IsDirectory => FileSystemInfo is DirectoryInfo;
+
         public bool LinkDisabled { get; set; }
         public int TotalFilesCount() => GetAllDescendants().Count(x => !x.IsDirectory);
         public IEnumerable<PageMenuTree> GetAllDescendants()
@@ -54,7 +58,7 @@ namespace NbApp.Srvs.Menus
                 return _content;
             }
 
-            var fullPath = this.Tag?.ToString();
+            var fullPath = this.GetFullPath();
             if (!File.Exists(fullPath))
             {
                 _content = "";
@@ -67,7 +71,7 @@ namespace NbApp.Srvs.Menus
             return _content;
         }
 
-        public static T Create<T>(string id, string parentId, string title, string icon, string herf, bool isDirectory) where T : PageMenuTree, new()
+        public static T Create<T>(string id, string parentId, string title, string icon, string herf, FileSystemInfo info) where T : PageMenuTree, new()
         {
             return new T()
             {
@@ -76,11 +80,28 @@ namespace NbApp.Srvs.Menus
                 Title = title,
                 Icon = icon,
                 Herf = herf,
-                IsDirectory = isDirectory
+                FileSystemInfo = info
             };
         }
-    }
 
+        public static string CombineHerf(string basePath, string lastPath, string fixStartWith = "/", string fixEndWith = "")
+        {
+            var nakeBasePath = "";
+            if (!string.IsNullOrWhiteSpace(basePath))
+            {
+                nakeBasePath = basePath.Trim().TrimEnd('/').TrimEnd('/');
+            }
+
+            var nakeAppend = "";
+            if (!string.IsNullOrWhiteSpace(lastPath))
+            {
+                nakeAppend = lastPath.Trim().TrimEnd('/').TrimEnd('/'); 
+            }
+
+            var combine = fixStartWith + nakeBasePath + '/' + nakeAppend + fixEndWith;
+            return combine.Replace("//", "/").Replace("//", "/");
+        }
+    }
     public class PageMenuTreeHelper
     {
         public static PageMenuTreeHelper Instance = new PageMenuTreeHelper();
@@ -113,16 +134,17 @@ namespace NbApp.Srvs.Menus
             string parentPath,
             string thisName,
             DirectoryInfo dirInfo,
-            string searchFilePattern, 
+            string searchFilePattern,
             string defaultFileName,
             Func<FileInfo, bool> ignoreFile,
             Func<DirectoryInfo, bool> ignoreDirectory)
         {
             //foo/bar/blah.cshtml
             //foo/bar/blah.md
-            var thisDirHerf = (parentPath.TrimEnd('/') + "/" + thisName).ToLower();
-            var thisDirTree = PageMenuTree.Create<PageMenuTree>(thisDirHerf, parentPath, dirInfo.Name, "", thisDirHerf, true);
-            thisDirTree.Tag = dirInfo.FullName;
+
+            //var thisDirHerf = (parentPath.TrimEnd('/') + "/" + thisName).ToLower();
+            var thisDirHerf = PageMenuTree.CombineHerf(parentPath, thisName).ToLower();
+            var thisDirTree = PageMenuTree.Create<PageMenuTree>(thisDirHerf, parentPath, dirInfo.Name, "", thisDirHerf, dirInfo);
 
             var theIndexFileExist = dirInfo.GetFiles(searchFilePattern, SearchOption.TopDirectoryOnly)
                 .Any(x => x.Name.Equals(defaultFileName, StringComparison.OrdinalIgnoreCase));
@@ -140,9 +162,9 @@ namespace NbApp.Srvs.Menus
                 }
 
                 var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileInfo.Name);
-                var thisFileHerf = (thisDirHerf + "/" + nameWithoutExtension).ToLower();
-                var fileTree = PageMenuTree.Create<PageMenuTree>(thisFileHerf, parentPath, nameWithoutExtension, "", thisFileHerf, false);
-                fileTree.Tag = fileInfo.FullName;
+                //var thisFileHerf = (thisDirHerf + "/" + nameWithoutExtension).ToLower();
+                var thisFileHerf = PageMenuTree.CombineHerf(thisDirHerf, nameWithoutExtension).ToLower();
+                var fileTree = PageMenuTree.Create<PageMenuTree>(thisFileHerf, parentPath, nameWithoutExtension, "", thisFileHerf, fileInfo);
                 thisDirTree.Children.Add(fileTree);
             }
 
@@ -167,8 +189,8 @@ namespace NbApp.Srvs.Menus
     {
         public static PageMenuTree LoadForRazorPages(this PageMenuTreeHelper helper,
             string parentPath,
-            string thisName, 
-            DirectoryInfo dirInfo, 
+            string thisName,
+            DirectoryInfo dirInfo,
             bool forceLoad = false)
         {
             if (dirInfo is null)
@@ -185,8 +207,8 @@ namespace NbApp.Srvs.Menus
 
         public static PageMenuTree LoadForMdFiles(this PageMenuTreeHelper helper,
             string parentPath,
-            string thisName, 
-            DirectoryInfo dirInfo, 
+            string thisName,
+            DirectoryInfo dirInfo,
             bool forceLoad = false)
         {
             if (dirInfo is null)

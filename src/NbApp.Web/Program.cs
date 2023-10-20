@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NbApp.Srvs.MdDocs;
-using NbApp.Srvs.Menus;
 using NbApp.Web.Bootstrap;
+using NbApp.Web.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -39,9 +39,16 @@ namespace NbApp.Web
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
 
-
             builder.Services.AddTransient<MdDocFileService>();
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                var appInfoVo = scope.ServiceProvider.GetService<AppInfoVo>();
+                if (!string.IsNullOrWhiteSpace(appInfoVo.PathBase) || appInfoVo.PathBase != "/")
+                {
+                    app.UsePathBase(appInfoVo.PathBase);
+                }
+            }
 
             app.UseDeveloperExceptionPage();
             //if (app.Environment.IsDevelopment())

@@ -5,24 +5,14 @@
 @{
     var items = Model;
     var currentPath = this.ViewBag.currentPath as string;
-    if (currentPath == null)
-    {
-        var request = this.ViewContext.HttpContext.Request;
-        currentPath = $"{request.PathBase}{request.Path}".ToLower();
-    }
+    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
+    var appRootPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app");
+    var appRootLinkCss = currentPath == appRootPath ? "" : "";
 }
 @functions {
 
     public void RenderItems(List<PageMenuTree> items, string currentPath)
     {
-        if (currentPath != "/")
-        {
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-        }
-        else
-        {
-            <li class="breadcrumb-item active" aria-current="page">Home</li>
-        }
         RenderItems(items, currentPath, 0);
     }
 
@@ -65,6 +55,14 @@
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end">
                 @{
+                    if (currentPath == appRootPath)
+                    {
+                        <li class="breadcrumb-item active" aria-current="page">App</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item"><a href="@appRootPath">App</a></li>
+                    }
                     RenderItems(items, currentPath);
                 }
             </ol>

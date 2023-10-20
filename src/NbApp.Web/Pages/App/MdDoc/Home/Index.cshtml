@@ -1,4 +1,4 @@
-﻿@page "/app/md-doc/{**path=index.md}"
+﻿@page "/app/mddoc/{**path=index.md}"
 @using NbApp.Srvs.MdDocs;
 @using NbApp.Srvs.Menus;
 @{
@@ -6,7 +6,9 @@
     var rootDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "md-files");
     var rootDirInfo = new System.IO.DirectoryInfo(rootDir);
 
-    var rootMenuTree = PageMenuTreeHelper.Instance.LoadForMdFiles("/app", "md-doc", rootDirInfo);
+    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
+    var rootPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "app");
+    var rootMenuTree = PageMenuTreeHelper.Instance.LoadForMdFiles(rootPath, "mddoc", rootDirInfo);
     var rootMenuTrees = rootMenuTree.Children;
 
     var currentMenuTree = rootMenuTree.GetAllDescendants().FirstOrDefault(x => x.Herf.MyEquals(currentPath)) ?? rootMenuTree;

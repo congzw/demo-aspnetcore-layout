@@ -1,15 +1,19 @@
-﻿@inject AppInfoVo appInfoVo
-@{
-    var appName = appInfoVo.AppName;
+﻿@{
+    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
+
     var request = this.Context.Request;
     var currentPath = $"{request.PathBase}{request.Path}";
     var currentPathQuery = $"{request.PathBase}{request.Path}{request.QueryString}";
-    var title = appName + $" - [{ViewData["Title"] ?? currentPath}]";
+
+    var appName = appInfoVo.AppName;
     var debugInfo = new
     {
-        page = this.ViewContext.View.Path,
+        pathBase = request.PathBase.ToString(),
         path = currentPath,
-        pathQuery = currentPathQuery
+        pathQuery = currentPathQuery,
+        viewPath = this.ViewBag.viewPath,
+        partialViewPath = this.ViewContext.View.Path,
+        appInfoVo = appInfoVo
     };
 }
 @if (appInfoVo.DebugMode)

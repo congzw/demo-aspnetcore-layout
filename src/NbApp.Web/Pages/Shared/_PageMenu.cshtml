@@ -13,12 +13,14 @@
         var request = this.ViewContext.HttpContext.Request;
         currentPath = $"{request.PathBase}{request.Path}".ToLower();
     }
+    //todo: read from config
+    var autoAppPages = new string[] { "Demo", "ScriptDoc" };
 }
 @functions {
 
     public void RenderFixMenu(string herf, string title, string currentPath)
     {
-        var theCss = currentPath.Equals(herf, StringComparison.OrdinalIgnoreCase) ? 
+        var theCss = currentPath.Equals(herf, StringComparison.OrdinalIgnoreCase) ?
         "nav-link text-dark selected" : "nav-link text-dark";
         <li class="nav-item"><a class="@theCss" href="@herf">@title</a></li>
     }
@@ -81,12 +83,16 @@
 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
     <ul class="navbar-nav flex-grow-1 bd-navbar">
         @{
-            RenderFixMenu("/", "Home", currentPath);
-            RenderFixMenu("/app/md-doc", "Articles", currentPath);
+            var rootPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app");
+            var systemPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app/sys/appinfo");
+            var mddocPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app/mddoc");
+            RenderFixMenu(rootPath, "App", currentPath);
+            RenderFixMenu(systemPath, "Info", currentPath);
+            RenderFixMenu(mddocPath, "MdDoc", currentPath);
         }
-        @if (appInfoVo.AutoLoadPageMenus)
+        @foreach (var item in menuTrees)
         {
-            foreach (var item in menuTrees)
+            if (autoAppPages.Contains(item.GetFileSystemInfo()?.Name, StringComparer.OrdinalIgnoreCase))
             {
                 RenderDropdownMenu(item, currentPath);
             }

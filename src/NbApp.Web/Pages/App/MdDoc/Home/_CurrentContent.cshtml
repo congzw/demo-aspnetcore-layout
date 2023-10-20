@@ -9,7 +9,7 @@
     var date = "";
     var fileContent = "";
     var htmlContent = "";
-    var fileInfo = new System.IO.FileInfo(currentMenuTree.Tag.ToString());
+    var fileInfo = new System.IO.FileInfo(currentMenuTree.GetFullPath());
     if (fileInfo.Exists)
     {
         date = fileInfo.LastWriteTime.ToShortDateString();
