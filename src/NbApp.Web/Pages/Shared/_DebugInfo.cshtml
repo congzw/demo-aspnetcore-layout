@@ -1,10 +1,17 @@
-﻿@{
-    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
+﻿@using Microsoft.AspNetCore.Routing;
+@{
+    var routeData = this.ViewBag.routeData as RouteData;
+    var routeDataInfo = new
+    {
+        routeData.DataTokens,
+        routeData.Values
+    };
 
     var request = this.Context.Request;
     var currentPath = $"{request.PathBase}{request.Path}";
     var currentPathQuery = $"{request.PathBase}{request.Path}{request.QueryString}";
-
+    
+    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
     var appName = appInfoVo.AppName;
     var debugInfo = new
     {
@@ -13,7 +20,8 @@
         pathQuery = currentPathQuery,
         viewPath = this.ViewBag.viewPath,
         partialViewPath = this.ViewContext.View.Path,
-        appInfoVo = appInfoVo
+        appInfoVo = appInfoVo,
+        routeDataInfo = routeDataInfo
     };
 }
 @if (appInfoVo.DebugMode)

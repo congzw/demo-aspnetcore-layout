@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using NbApp.Srvs.MdDocs;
 using NbApp.Web.Bootstrap;
 using NbApp.Web.Models;
 using System;
@@ -39,7 +38,6 @@ namespace NbApp.Web
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
 
-            builder.Services.AddTransient<MdDocFileService>();
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
             {

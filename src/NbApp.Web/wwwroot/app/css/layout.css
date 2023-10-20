@@ -1,0 +1,14 @@
+.navbar-nav .nav-link.selected {
+    font-weight: bolder;
+}
+
+.navbar-nav .dropdown-item.selected {
+    font-weight: bolder;
+    font-size: larger;
+}
+
+/* Show it is fixed to the top */
+body {
+    min-height: 75rem;
+    padding-top: 4.5rem;
+}

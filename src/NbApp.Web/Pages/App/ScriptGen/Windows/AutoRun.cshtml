@@ -1,0 +1,10 @@
+﻿@page
+@{
+    var currentPath = this.ViewBag.currentPath as string;
+    var dynamicVo = new
+    {
+        Title = "abc",
+        CreateAt = DateTime.Now
+    };
+}
+<partial name="_AutoRun" , model="dynamicVo"></partial>

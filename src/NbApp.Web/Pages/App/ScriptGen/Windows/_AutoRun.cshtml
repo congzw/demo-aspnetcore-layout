@@ -1,0 +1,11 @@
+﻿@{
+    var currentPath = this.ViewBag.currentPath as string;
+    var dynamicVo = this.Model;
+    var dynamicVoJson = JsonHelper.Instance.ToJson(dynamicVo, true);
+}
+<div class="card m-3">
+    <h5 class="card-header">@this.ViewContext.ExecutingFilePath</h5>
+    <div class="card-body">
+        <pre><code class="language-json">@Html.Raw(dynamicVoJson)</code></pre>
+    </div>
+</div>

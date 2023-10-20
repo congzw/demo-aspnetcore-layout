@@ -5,4 +5,5 @@
     ViewBag.currentPath = $"{request.PathBase}{request.Path}".TrimEnd('/').ToLower();
     ViewBag.appInfoVo = appInfoVo;
     ViewBag.viewPath = this.ViewContext.View.Path;
+    ViewBag.routeData = this.ViewContext.RouteData;
 }

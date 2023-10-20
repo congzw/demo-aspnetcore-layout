@@ -1,6 +1,11 @@
 ﻿@page
 @{
     var currentPath = this.ViewBag.currentPath as string;
+    var dynamicVo = new
+    {
+        Title = "abc",
+        CreateAt = DateTime.Now
+    };
 }
 <div class="card m-3">
     <h5 class="card-header">@currentPath</h5>
@@ -8,3 +13,5 @@
         @this.ViewContext.ExecutingFilePath
     </div>
 </div>
+<hr/>
+<partial name="_Systemd" , model="dynamicVo"></partial>

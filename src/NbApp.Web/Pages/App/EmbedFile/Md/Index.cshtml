@@ -1,0 +1,29 @@
+﻿@page "/app/md-doc/{**file_name}"
+@{
+    var file_name = "";
+    if (this.RouteData.Values.TryGetValue("file_name", out var value))
+    {
+        if (value != null)
+        {
+            file_name = value.ToString();
+        }
+    }
+
+    var currentPath = this.ViewBag.currentPath as string;
+    var rootDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "md-files");
+    var rootDirInfo = new System.IO.DirectoryInfo(rootDir);
+
+    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
+    var rootPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "app");
+
+    var rootMenuTree = PageMenuTreeHelper.Instance.LoadForMdFiles(rootPath, "md-doc", rootDirInfo);
+    var currentMenuTree = rootMenuTree.GetAllDescendants().FirstOrDefault(x => x.Herf.MyEquals(currentPath)) ?? rootMenuTree;
+    var theEntryModel = new { rootMenuTree, currentMenuTree };
+
+    ViewBag.rootMenuTree = rootMenuTree;
+    ViewBag.currentMenuTree = currentMenuTree;
+}
+@section Styles {
+    <link href="~/app/css/blog.css" rel="stylesheet" />
+}
+<partial name="EmbedFile/_Entry" model="theEntryModel"></partial>

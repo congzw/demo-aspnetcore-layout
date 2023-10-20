@@ -146,8 +146,14 @@ namespace NbApp.Srvs.Menus
             var thisDirHerf = PageMenuTree.CombineHerf(parentPath, thisName).ToLower();
             var thisDirTree = PageMenuTree.Create<PageMenuTree>(thisDirHerf, parentPath, dirInfo.Name, "", thisDirHerf, dirInfo);
 
-            var theIndexFileExist = dirInfo.GetFiles(searchFilePattern, SearchOption.TopDirectoryOnly)
-                .Any(x => x.Name.Equals(defaultFileName, StringComparison.OrdinalIgnoreCase));
+            //defaultFileName search order: ["index.foo", "index"]
+            var subFileInfos = dirInfo.GetFiles(searchFilePattern, SearchOption.TopDirectoryOnly);
+            var theIndexFileExist = subFileInfos.Any(x => x.Name.Equals(defaultFileName, StringComparison.OrdinalIgnoreCase));
+            if (!theIndexFileExist)
+            {                
+                theIndexFileExist = subFileInfos.Any(x => Path.GetFileNameWithoutExtension(x.Name).Equals(defaultFileName, StringComparison.OrdinalIgnoreCase));
+            }
+
             thisDirTree.LinkDisabled = !theIndexFileExist;
 
             var fileInfos = dirInfo.GetFiles(searchFilePattern, SearchOption.TopDirectoryOnly);
@@ -182,45 +188,6 @@ namespace NbApp.Srvs.Menus
                 thisDirTree.Children.Add(dirTree);
             }
             return thisDirTree;
-        }
-    }
-
-    public static class PageMenuTreeHelperExtensions
-    {
-        public static PageMenuTree LoadForRazorPages(this PageMenuTreeHelper helper,
-            string parentPath,
-            string thisName,
-            DirectoryInfo dirInfo,
-            bool forceLoad = false)
-        {
-            if (dirInfo is null)
-            {
-                throw new ArgumentNullException(nameof(dirInfo));
-            }
-            var cacheKey = $"RazorPages@{dirInfo.FullName}".ToLower();
-            var searchFilePattern = "*.cshtml";
-            var defaultFileName = "Index.cshtml";
-            var ignoreFile = (FileInfo fileInfo) => fileInfo.Name.StartsWith("_");
-            var ignoreDirectory = (DirectoryInfo dirInfo) => dirInfo.Name.Equals("Shared") || dirInfo.Name.Equals("Components") || dirInfo.Name.StartsWith("_");
-            return helper.Load(parentPath, thisName, dirInfo, cacheKey, forceLoad, searchFilePattern, defaultFileName, ignoreFile, ignoreDirectory);
-        }
-
-        public static PageMenuTree LoadForMdFiles(this PageMenuTreeHelper helper,
-            string parentPath,
-            string thisName,
-            DirectoryInfo dirInfo,
-            bool forceLoad = false)
-        {
-            if (dirInfo is null)
-            {
-                throw new ArgumentNullException(nameof(dirInfo));
-            }
-            var cacheKey = $"MdFiles@{dirInfo.FullName}".ToLower();
-            var searchFilePattern = "*.md";
-            var defaultFileName = "index.md";
-            var ignoreFile = (FileInfo fileInfo) => fileInfo.Name.StartsWith("_");
-            var ignoreDirectory = (DirectoryInfo dirInfo) => dirInfo.Name.StartsWith("_");
-            return helper.Load(parentPath, thisName, dirInfo, cacheKey, forceLoad, searchFilePattern, defaultFileName, ignoreFile, ignoreDirectory);
         }
     }
 }

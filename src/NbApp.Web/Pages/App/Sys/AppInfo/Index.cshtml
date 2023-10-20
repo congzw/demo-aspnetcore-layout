@@ -4,6 +4,8 @@
 @inject AppInfoVo appInfoVo
 @{
     var currentProcess = Process.GetCurrentProcess();
+    var firstKey = "runtime-info";
+    var tabDict = new Dictionary<string, object>();
 
     var runtimeInfo = new
     {
@@ -18,13 +20,17 @@
         CommandLineArgs = Environment.GetCommandLineArgs(),
         CurrentDirectory = Environment.CurrentDirectory
     };
+    tabDict["runtime-info"] = runtimeInfo;
+
+    //var webRunInfo = WebRunInfo.Instance;
+    //tabDict["web-info"] = webRunInfo;
+
+    tabDict["app-info"] = appInfoVo;
+
+    var buildInfo = BuildInfoFile.Load();
+    tabDict["build-info"] = buildInfo;
 
     var envInfo = Environment.GetEnvironmentVariables();
-
-    var tabDict = new Dictionary<string, object>();
-    var firstKey = "runtime-info";
-    tabDict["runtime-info"] = runtimeInfo;
-    tabDict["app-info"] = appInfoVo;
     tabDict["env-info"] = envInfo;
 }
 
