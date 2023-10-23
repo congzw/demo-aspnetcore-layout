@@ -14,6 +14,13 @@
   <ItemGroup>
     <ProjectReference Include="..\NbApp.Shared\NbApp.Shared.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Pages\App\Sys\Cli\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
   
   <Target Name="MyCopyContentAfterPublish" AfterTargets="Publish">
     <ItemGroup>

@@ -1,4 +1,3 @@
-using Common;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -28,7 +27,6 @@ namespace NbApp.Web.Models
         {
             var assm = Assembly.GetEntryAssembly();
             var assmLocation = assm.Location;
-            var spec = AssemblySpec.GetAssemblySpec(assm);
 
             var item = new SystemdSetting();
             item.EntryAssemblyLocation = assmLocation;
@@ -37,7 +35,7 @@ namespace NbApp.Web.Models
             item.my_exe_start = Path.Combine(item.my_srv_dir, item.my_srv_name);
 
             item.my_srv_file_name = $"{item.my_srv_name}.service";
-            item.my_srv_desc = $"{item.my_srv_name}@{spec.AssemblyVersion}";
+            item.my_srv_desc = $"{item.my_srv_name}";
             item.my_user = "a";
             item.my_restart_type = "always";
             item.my_restart_sec = 15;
@@ -45,7 +43,6 @@ namespace NbApp.Web.Models
 
             item.my_srvice_exts.Add("KillSignal=SIGINT");
             item.my_srvice_exts.Add("Environment=DOTNET_ROOT=/opt/media/dotnet/");
-
 
             var saveTo = Path.Combine(item.my_srv_dir, "_autorun", "linux-x64", item.my_srv_file_name);
             item.my_copy_from = saveTo;

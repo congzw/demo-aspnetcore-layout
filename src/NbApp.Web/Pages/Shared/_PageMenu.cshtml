@@ -14,7 +14,7 @@
         currentPath = $"{request.PathBase}{request.Path}".ToLower();
     }
     //todo: read from config
-    var autoAppPages = new string[] { "Demo", "ScriptGen" };
+    var autoAppPages = new string[] { "Sys", "ScriptGen" };
 }
 @functions {
 
@@ -84,19 +84,20 @@
     <ul class="navbar-nav flex-grow-1 bd-navbar">
         @{
             var rootPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app");
-            var systemPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/sys/appinfo");
             var mdPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/md-doc");
             var scriptPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/script-doc");
             RenderFixMenu(rootPath, "App", currentPath);
-            RenderFixMenu(systemPath, "Info", currentPath);
             RenderFixMenu(mdPath, "MdDoc", currentPath);
             RenderFixMenu(scriptPath, "ScriptDoc", currentPath);
         }
-        @foreach (var item in menuTrees)
+        @foreach (var autoAppPage in autoAppPages)
         {
-            if (autoAppPages.Contains(item.GetFileSystemInfo()?.Name, StringComparer.OrdinalIgnoreCase))
+            foreach (var item in menuTrees)
             {
-                RenderDropdownMenu(item, currentPath);
+                if (autoAppPage.MyEquals(item.GetFileSystemInfo()?.Name))
+                {
+                    RenderDropdownMenu(item, currentPath);
+                }
             }
         }
     </ul>

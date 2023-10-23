@@ -126,6 +126,10 @@ namespace NbApp.Srvs.Menus
                     _menu = CreateMenuTree(parentPath, thisName, dirInfo, searchFilePattern, defaultFileName, ignoreFile, ignoreDirectory);
                     Cache[cacheKey] = _menu;
                 }
+                else
+                {
+                    throw new ArgumentException("目录不存在", nameof(dirInfo));
+                }
             }
             return _menu;
         }
@@ -139,10 +143,6 @@ namespace NbApp.Srvs.Menus
             Func<FileInfo, bool> ignoreFile,
             Func<DirectoryInfo, bool> ignoreDirectory)
         {
-            //foo/bar/blah.cshtml
-            //foo/bar/blah.md
-
-            //var thisDirHerf = (parentPath.TrimEnd('/') + "/" + thisName).ToLower();
             var thisDirHerf = PageMenuTree.CombineHerf(parentPath, thisName).ToLower();
             var thisDirTree = PageMenuTree.Create<PageMenuTree>(thisDirHerf, parentPath, dirInfo.Name, "", thisDirHerf, dirInfo);
 

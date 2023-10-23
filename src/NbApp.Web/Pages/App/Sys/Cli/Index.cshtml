@@ -1,49 +1,20 @@
 ﻿@page
 @using NbApp.Srvs.DotnetCli;
-@using RI = System.Runtime.InteropServices.RuntimeInformation;
 @using System.Diagnostics;
 @{
-    var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
-    var currentProcess = Process.GetCurrentProcess();
-    var firstKey = "start-info";
-    var tabDict = new Dictionary<string, object>();
-
-    var startInfo = new
-    {
-        TargetFrameworkName = AppContext.TargetFrameworkName,
-        BaseDirectory = AppContext.BaseDirectory,
-        CurrentDirectory = Environment.CurrentDirectory,
-
-        AppStartAt = currentProcess.StartTime.ToString("yyyy-MM-dd HH:mm:ss"),
-        AppStartDuration = (DateTime.Now - currentProcess.StartTime).ToString(@"hh\:mm\:ss"),
-
-        ProcessId = Environment.ProcessId,
-        Environment.ProcessPath,
-        CommandLine = Environment.CommandLine,
-        CommandLineArgs = Environment.GetCommandLineArgs()
-    };
-
     var dotnetCliWrap = DotnetCliWrap.Instance;
-    var runtimeInfo = new
-    {
-        RI.FrameworkDescription,
-        RI.OSDescription,
-        RI.OSArchitecture,
-        RI.ProcessArchitecture,
-        RI.RuntimeIdentifier
-    };
+    var tabDict = new Dictionary<string, MyCliCommand>();
 
-    tabDict["start-info"] = startInfo;
+    var version = await dotnetCliWrap.GetVersion().ExecuteBufferedAsync(true);
+    tabDict[version.Arguments] = version;
 
-    tabDict["runtime-info"] = runtimeInfo;
+    var sdks = await dotnetCliWrap.GetSdks().ExecuteBufferedAsync(true);
+    tabDict[sdks.Arguments] = sdks;
+    
+    var info = await dotnetCliWrap.GetInfo().ExecuteBufferedAsync(true);
+    tabDict[info.Arguments] = info;
 
-    tabDict["app-info"] = theAppSetting;
-
-    var buildInfo = BuildInfoFile.Load();
-    tabDict["build-info"] = buildInfo;
-
-    var envInfoProcess = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
-    tabDict["env-info"] = envInfoProcess;
+    var firstKey = sdks.Arguments;
 }
 
 <nav>
@@ -63,6 +34,8 @@
 <div class="tab-content" id="nav-tabContent">
     @foreach (var tabItem in tabDict)
     {
+        var output = tabItem.Value.Success ? tabItem.Value.GetOutput() : tabItem.Value.GetError();
+        var outputLines = output.Replace("\r", "");
         var selected = tabItem.Key == firstKey;
         var currentCss = selected ? "tab-pane fade show active" : "tab-pane fade";
         var tabId = $"nav-tab-{tabItem.Key}";
@@ -72,6 +45,12 @@
                 <h5 class="card-header">@tabItem.Key</h5>
                 <div class="card-body">
                     <pre><code class="language-json">@Html.Raw(tabItem.Value.ToJson(true))</code></pre>
+                </div>
+            </div>
+            <div class="card m-3">
+                <h5 class="card-header">Output</h5>
+                <div class="card-body">
+                    <pre><code class="language-shell">@Html.Raw(outputLines)</code></pre>
                 </div>
             </div>
         </div>

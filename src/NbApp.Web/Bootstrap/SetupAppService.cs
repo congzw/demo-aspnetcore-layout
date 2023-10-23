@@ -1,5 +1,6 @@
 using Common;
 using Microsoft.Extensions.DependencyInjection;
+using NbApp.Srvs.DotnetCli;
 using NbApp.Web.Models;
 
 namespace NbApp.Web.Bootstrap
