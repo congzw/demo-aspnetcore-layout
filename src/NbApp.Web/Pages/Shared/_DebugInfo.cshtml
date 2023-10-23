@@ -11,8 +11,8 @@
     var currentPath = $"{request.PathBase}{request.Path}";
     var currentPathQuery = $"{request.PathBase}{request.Path}{request.QueryString}";
     
-    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
-    var appName = appInfoVo.AppName;
+    var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
+    var appName = theAppSetting.AppName;
     var debugInfo = new
     {
         pathBase = request.PathBase.ToString(),
@@ -20,11 +20,11 @@
         pathQuery = currentPathQuery,
         viewPath = this.ViewBag.viewPath,
         partialViewPath = this.ViewContext.View.Path,
-        appInfoVo = appInfoVo,
+        theAppSetting = theAppSetting,
         routeDataInfo = routeDataInfo
     };
 }
-@if (appInfoVo.DebugMode)
+@if (theAppSetting.DebugMode)
 {
     <script>
         var debugInfo = @Html.Raw(debugInfo.ToJson(true));

@@ -1,9 +1,11 @@
-﻿@inject AppInfoVo appInfoVo
+﻿@using Microsoft.Extensions.Options;
+@inject IOptionsSnapshot<TheAppSetting> theAppSetting
 @{
     Layout = "_Layout";
     var request = this.ViewContext.HttpContext.Request;
+
+    ViewBag.theAppSetting = theAppSetting.Value;
     ViewBag.currentPath = $"{request.PathBase}{request.Path}".TrimEnd('/').ToLower();
-    ViewBag.appInfoVo = appInfoVo;
     ViewBag.viewPath = this.ViewContext.View.Path;
     ViewBag.routeData = this.ViewContext.RouteData;
 }

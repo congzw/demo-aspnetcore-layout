@@ -5,8 +5,8 @@
 @{
     var items = Model;
     var currentPath = this.ViewBag.currentPath as string;
-    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
-    var appRootPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app");
+    var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
+    var appRootPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app");
     var appRootLinkCss = currentPath == appRootPath ? "" : "";
 }
 @functions {

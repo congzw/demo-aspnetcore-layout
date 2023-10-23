@@ -5,7 +5,7 @@
 @model List<PageMenuTree>
 @inject IWebHostEnvironment webEnv;
 @{
-    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
+    var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
     var menuTrees = Model;
     var currentPath = this.ViewBag.currentPath as string;
     if (currentPath == null)
@@ -83,10 +83,10 @@
 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
     <ul class="navbar-nav flex-grow-1 bd-navbar">
         @{
-            var rootPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app");
-            var systemPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app/sys/appinfo");
-            var mdPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app/md-doc");
-            var scriptPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "/app/script-doc");
+            var rootPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app");
+            var systemPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/sys/appinfo");
+            var mdPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/md-doc");
+            var scriptPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/script-doc");
             RenderFixMenu(rootPath, "App", currentPath);
             RenderFixMenu(systemPath, "Info", currentPath);
             RenderFixMenu(mdPath, "MdDoc", currentPath);

@@ -13,8 +13,8 @@
     var rootDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "md-files");
     var rootDirInfo = new System.IO.DirectoryInfo(rootDir);
 
-    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
-    var rootPath = PageMenuTree.CombineHerf(appInfoVo.PathBase, "app");
+    var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
+    var rootPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "app");
 
     var rootMenuTree = PageMenuTreeHelper.Instance.LoadForMdFiles(rootPath, "md-doc", rootDirInfo);
     var currentMenuTree = rootMenuTree.GetAllDescendants().FirstOrDefault(x => x.Herf.MyEquals(currentPath)) ?? rootMenuTree;

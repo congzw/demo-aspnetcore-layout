@@ -8,10 +8,9 @@ namespace NbApp.Web.Bootstrap
     {
         public static IServiceCollection AddTheAppService(IServiceCollection services)
         {
+            TheAppSettingSetup.Setup(services);
             WebRunInfo.Instance.Setup(services);
 
-            //todo: load from setting
-            services.AddSingleton<AppInfoVo>();
             return services;
         }
     }

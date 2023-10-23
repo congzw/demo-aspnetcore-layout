@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NbApp.Web.Bootstrap;
 using NbApp.Web.Models;
 using System;
@@ -41,10 +42,10 @@ namespace NbApp.Web
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
             {
-                var appInfoVo = scope.ServiceProvider.GetService<AppInfoVo>();
-                if (!string.IsNullOrWhiteSpace(appInfoVo.PathBase) || appInfoVo.PathBase != "/")
+                var appSetting = scope.ServiceProvider.GetService<IOptions<TheAppSetting>>().Value;
+                if (!string.IsNullOrWhiteSpace(appSetting.PathBase) || appSetting.PathBase != "/")
                 {
-                    app.UsePathBase(appInfoVo.PathBase);
+                    app.UsePathBase(appSetting.PathBase);
                 }
             }
 

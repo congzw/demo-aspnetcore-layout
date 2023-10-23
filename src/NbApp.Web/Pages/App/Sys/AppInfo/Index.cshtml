@@ -1,11 +1,27 @@
 ﻿@page
 @using RI = System.Runtime.InteropServices.RuntimeInformation;
 @using System.Diagnostics;
-@inject AppInfoVo appInfoVo
 @{
+
+    var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
     var currentProcess = Process.GetCurrentProcess();
-    var firstKey = "runtime-info";
+    var firstKey = "start-info";
     var tabDict = new Dictionary<string, object>();
+
+    var startInfo = new
+    {
+        TargetFrameworkName = AppContext.TargetFrameworkName,
+        BaseDirectory = AppContext.BaseDirectory,
+        CurrentDirectory = Environment.CurrentDirectory,
+
+        AppStartAt = currentProcess.StartTime.ToString("yyyy-MM-dd HH:mm:ss"),
+        AppStartDuration = (DateTime.Now - currentProcess.StartTime).ToString(@"hh\:mm\:ss"),
+        
+        ProcessId = Environment.ProcessId,
+        Environment.ProcessPath,
+        CommandLine = Environment.CommandLine,
+        CommandLineArgs = Environment.GetCommandLineArgs(),
+    };
 
     var runtimeInfo = new
     {
@@ -13,25 +29,20 @@
         RI.OSDescription,
         RI.OSArchitecture,
         RI.ProcessArchitecture,
-        RI.RuntimeIdentifier,
-        AppStartAt = currentProcess.StartTime,
-        AppStartDuration = (DateTime.Now - currentProcess.StartTime).ToString(@"hh\:mm\:ss"),
-        ProcessId = Environment.ProcessId,
-        CommandLineArgs = Environment.GetCommandLineArgs(),
-        CurrentDirectory = Environment.CurrentDirectory
+        RI.RuntimeIdentifier
     };
+    
+    tabDict["start-info"] = startInfo;
+
     tabDict["runtime-info"] = runtimeInfo;
 
-    //var webRunInfo = WebRunInfo.Instance;
-    //tabDict["web-info"] = webRunInfo;
-
-    tabDict["app-info"] = appInfoVo;
+    tabDict["app-info"] = theAppSetting;
 
     var buildInfo = BuildInfoFile.Load();
     tabDict["build-info"] = buildInfo;
 
-    var envInfo = Environment.GetEnvironmentVariables();
-    tabDict["env-info"] = envInfo;
+    var envInfoProcess = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
+    tabDict["env-info"] = envInfoProcess;
 }
 
 <nav>

@@ -2,15 +2,15 @@
 @using NbApp.Srvs.Menus;
 @inject IWebHostEnvironment webEnv;
 @{
-    var appInfoVo = this.ViewBag.appInfoVo as AppInfoVo;
-    var appName = appInfoVo.AppName;
+    var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
+    var appName = theAppSetting.AppName;
     var currentPath = this.ViewBag.currentPath as string;
 
     var title = appName + $" - [{ViewData["Title"] ?? currentPath}]";
 
     var pageLocation = System.IO.Path.Combine(webEnv.ContentRootPath, "Pages", "App");
     var pageDirInfo = new System.IO.DirectoryInfo(pageLocation);
-    var pageMenuTree = PageMenuTreeHelper.Instance.LoadForRazorPages(appInfoVo.PathBase, "app", pageDirInfo);
+    var pageMenuTree = PageMenuTreeHelper.Instance.LoadForRazorPages(theAppSetting.PathBase, "app", pageDirInfo);
     var menuTrees = pageMenuTree.Children;
 }
 <!DOCTYPE html>
