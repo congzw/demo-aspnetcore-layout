@@ -21,6 +21,7 @@
     <title>@title</title>
     <link href="~/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/libs/boostrap-icons/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/libs/layui/css/layui.css" rel="stylesheet" />
     <link href="~/libs/prism/theme/ocodia.css" rel="stylesheet" />
     <link href="~/app/css/layout.css" rel="stylesheet" />
     @await RenderSectionAsync("Styles", required: false)
@@ -52,8 +53,9 @@
             <span> &copy; 2023 - @appName</span>
         </div>
     </footer>
-
+    <script src="~/libs/jquery/jquery.min.js"></script>
     <script src="~/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/libs/layui/layui.js"></script>
     <script src="~/libs/prism/prism.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <partial name="_DebugInfo"></partial>

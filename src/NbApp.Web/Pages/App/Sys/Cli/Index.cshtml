@@ -3,7 +3,7 @@
 @using System.Diagnostics;
 @{
     var dotnetCliWrap = DotnetCliWrap.Instance;
-    var tabDict = new Dictionary<string, MyCliCommand>();
+    var tabDict = new Dictionary<string, MyCliCommandResult>();
 
     var version = await dotnetCliWrap.GetVersion().ExecuteBufferedAsync(true);
     tabDict[version.Arguments] = version;
@@ -34,7 +34,7 @@
 <div class="tab-content" id="nav-tabContent">
     @foreach (var tabItem in tabDict)
     {
-        var output = tabItem.Value.Success ? tabItem.Value.GetOutput() : tabItem.Value.GetError();
+        var output = tabItem.Value.Output;
         var outputLines = output.Replace("\r", "");
         var selected = tabItem.Key == firstKey;
         var currentCss = selected ? "tab-pane fade show active" : "tab-pane fade";

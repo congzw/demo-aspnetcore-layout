@@ -1,0 +1,49 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.RazorPages;
+@model AjaxModel
+@{
+    var request = this.Request;
+    var currentPath = $"{request.PathBase}{request.Path}";
+}
+@functions {
+
+    public class AjaxModel : PageModel
+    {
+        public IActionResult OnPostGetInfo(string name)
+        {
+            return new JsonResult($"Hello from {DateTime.Now}: {name}");
+        }
+    }
+}
+
+<div class="card m-3">
+    <h5 class="card-header">@currentPath</h5>
+    <div class="card-body">
+        @this.ViewContext.ExecutingFilePath
+        <hr />
+        @Html.AntiForgeryToken()
+        <button class="btn btn-primary" type="button" id="callAjax">Say Hello</button>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        $("#callAjax").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "./Ajax?handler=GetInfo",
+                data: { "name": "Mark" },
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: "json",
+                headers:
+                {
+                    "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                success: function (msg) {
+                    console.log(msg);
+                }
+            });
+        });
+    </script>
+}

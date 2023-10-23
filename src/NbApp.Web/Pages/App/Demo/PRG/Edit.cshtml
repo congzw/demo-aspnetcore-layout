@@ -1,0 +1,96 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.RazorPages;
+@model EditFooModel
+@{
+    var currentJson = this.Model.Current.ToJson(true);
+    var itemsJson = this.Model.Items.ToJson(true);
+}
+
+@functions {
+
+    public class EditFooModel : PageModel
+    {
+        [BindProperty]
+        public string Id { get; set; }
+
+        [BindProperty]
+        public string Title { get; set; }
+
+        public FooModel Current { get; set; }
+
+        public List<FooModel> Items { get; set; }
+
+        public string Message { get; set; }
+
+        public void OnGet([FromQuery] string id)
+        {
+            Message = "PRG OnGet: " + id;
+            Console.WriteLine(Message);
+            Current = FooRepo.Instance.Items.FirstOrDefault(x => x.Id == id);
+            Items = FooRepo.Instance.Items;
+            if (Current != null)
+            {
+                Id = Current.Id;
+                Title = Current.Title;
+            }
+        }
+
+        public IActionResult OnPost()
+        {
+            Message = "PRG OnPost: " + Id;
+            Console.WriteLine(Message);
+            var theOne = FooRepo.Instance.Items.FirstOrDefault(x => x.Id == Id);
+            if (theOne != null)
+            {
+                theOne.Title = Title;
+                FooRepo.Instance.AddOrUpdate(theOne);
+            }
+
+            Message = "PRG OnRedirect: " + Id;
+            Console.WriteLine(Message);
+            return RedirectToPage("Edit", new
+            {
+                id = Id
+            });
+        }
+    }
+}
+
+<h2>@Model.Message</h2>
+
+<div class="card m-3">
+    <h5 class="card-header">Update</h5>
+    <div class="card-body">
+        <form method="post">
+            <div class="form-row">
+                <div class="col-md-4">
+                    <label asp-for="Id">
+                        Id:
+                    </label>
+                    <input class="form-control" type="text" asp-for="Id" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Title">
+                        Title:
+                    </label>
+                    <input class="form-control" type="text" asp-for="Title" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block align-middle">Update</button>
+        </form>
+    </div>
+</div>
+
+<div class="card m-3">
+    <h5 class="card-header">Current</h5>
+    <div class="card-body">
+        <pre><code class="language-shell">@Html.Raw(currentJson)</code></pre>
+    </div>
+</div>
+
+<div class="card m-3">
+    <h5 class="card-header">Items</h5>
+    <div class="card-body">
+        <pre><code class="language-shell">@Html.Raw(itemsJson)</code></pre>
+    </div>
+</div>

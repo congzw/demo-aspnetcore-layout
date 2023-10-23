@@ -1,34 +1,121 @@
 ﻿@page
 @using NbApp.Srvs.DotnetCli;
 @using System.Diagnostics;
+@model ExecPageModel
 @{
-    var dotnetCliWrap = DotnetCliWrap.Instance;
-    var tabDict = new Dictionary<string, MyCliCommand>();
+    var input = $"{this.Model.Target} {this.Model.Arguments}";
+    var output = $"{this.Model.Output}";
+}
 
-    var cliCmd =  dotnetCliWrap.CreateCommand("git", "status");
-    var exMessage = "";
-    var outputLines = "";
-    try
+@functions {
+
+    public class ExecPageModel : PageModel
     {
-        cliCmd = await cliCmd.ExecuteBufferedAsync(false);
-        var output = cliCmd.Success ? cliCmd.GetOutput() : cliCmd.GetError();
-        outputLines = output.Replace("\r", "");
-    }
-    catch (Exception ex)
-    {
-        exMessage = ex.Message;
+        [BindProperty]
+        public string Target { get; set; }
+
+        [BindProperty]
+        public string Arguments { get; set; }
+
+        public string Output { get; set; }
+
+        [TempData]
+        public string cliJson { get; set; }
+
+        public void OnGet()
+        {
+            if (string.IsNullOrWhiteSpace(cliJson))
+            {
+                Target = "dotnet";
+                Arguments = "--version";
+            }
+            else
+            {
+                var cliCmdResult = cliJson.FromJson<MyCliCommandResult>(null);
+                if (cliCmdResult != null)
+                {
+                    Target = cliCmdResult.Target;
+                    Arguments = cliCmdResult.Arguments;
+                    Output = cliCmdResult.Output;
+                }
+            }
+            Console.WriteLine($"OnGet: {Target} {Arguments} {Output}");
+        }
+
+        public async Task<IActionResult> OnPost()
+        {
+            //todo: validate
+            var cliCmd = MyCliHelper.Instance.CreateCommand(Target, Arguments);
+            var cliCmdResult = await cliCmd.ExecuteBufferedAsync(false);
+            TempData["cliJson"] = cliCmdResult.ToJson();
+            return RedirectToPage("Exec");
+        }
     }
 }
+
 <div class="card m-3">
-    <h5 class="card-header">执行指令</h5>
+    <h5 class="card-header">执行脚本</h5>
     <div class="card-body">
-        <pre><code class="language-json">@Html.Raw(cliCmd.ToJson(true))</code></pre>
+        <pre><code class="language-shell">@Html.Raw(input) </code></pre>
+    </div>
+    <h5 class="card-header">执行结果</h5>
+    <div class="card-body">
+        <pre><code class="language-shell">@Html.Raw(output)</code></pre>
     </div>
 </div>
 <hr />
 <div class="card m-3">
-    <h5 class="card-header">执行结果</h5>
+    <h5 class="card-header">脚本参数</h5>
     <div class="card-body">
-        <pre><code class="language-shell">@Html.Raw(outputLines)</code></pre>
+        <form class="layui-form" action="" method="post">
+            <div class="layui-form-item">
+                <label asp-for="Target" class="layui-form-label">
+                    目标:
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="Target" required lay-verify="required" placeholder="请输入目标" autocomplete="off" class="layui-input" asp-for="Target">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label asp-for="Arguments" class="layui-form-label">
+                    参数:
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="Arguments" required lay-verify="required" placeholder="请输入参数" autocomplete="off" class="layui-input" asp-for="Arguments">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">执行脚本</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
+
+
+@section Scripts {
+    <script>
+        //layui.use(['layer', 'form'], function () {
+        //    var layer = layui.layer
+        //        , form = layui.form;
+
+        //    layer.msg('Hello World');
+        //});
+
+        //Demo
+        layui.use('form', function () {
+            var form = layui.form;
+
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                //layer.msg(JSON.stringify(data.field));
+                //return false;
+                console.log(data.field);
+                return true;
+            });
+        });
+
+    </script>
+}
