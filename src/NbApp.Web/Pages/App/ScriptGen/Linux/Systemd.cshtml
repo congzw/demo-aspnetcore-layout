@@ -1,4 +1,5 @@
 ﻿@page
+@using System.IO;
 @{
     var systemdSetting = SystemdSetting.CreateDefault();
     var currentPath = this.ViewBag.currentPath as string;
@@ -7,12 +8,29 @@
     //    Title = "abc",
     //    CreateAt = DateTime.Now
     //};
+
+    var vo = SystemdSetting.CreateDefault();
+    var title = "systemd服务说明";
+
+    var htmlContent = "";
+    using (var sw = new StringWriter())
+    {
+        var partialHtml = await Html.PartialAsync("_Systemd", vo);
+        partialHtml.WriteTo(sw, this.HtmlEncoder);
+        var mdContent = sw.ToString();
+        //todo: save to md or script file
+        htmlContent = Markdig.Markdown.ToHtml(mdContent);
+    }
 }
-<div class="card m-3">
-    <h5 class="card-header">@currentPath</h5>
-    <div class="card-body">
-        @this.ViewContext.ExecutingFilePath
-    </div>
-</div>
-<hr/>
-<partial name="_Systemd" , model="systemdSetting"></partial>
+<article class="blog-post">
+    <h2 class="blog-post-title">@title</h2>
+    <p class="blog-post-meta">
+        <span style="color: cornflowerblue;">
+            <i class="bi-alarm"></i>
+            @DateTime.Now
+        </span>
+    </p>
+    <hr>
+    @Html.Raw(htmlContent)
+
+</article>

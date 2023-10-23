@@ -1,11 +1,95 @@
 ﻿@{
-    var currentPath = this.ViewBag.currentPath as string;
-    var dynamicVo = this.Model;
-    var dynamicVoJson = JsonHelper.Instance.ToJson(dynamicVo, true);
+    var vo = this.Model;
+    var srv_file_name = vo.my_srv_file_name;
+    var now = DateTime.Now;
+
+    var saveTo = vo.my_copy_from;
+    var copyTo = vo.my_copy_to;
+    var voJson = JsonHelper.Instance.ToJson(vo, true);
 }
-<div class="card m-3">
-    <h5 class="card-header">@this.ViewContext.ExecutingFilePath</h5>
-    <div class="card-body">
-        <pre><code class="language-json">@Html.Raw(dynamicVoJson)</code></pre>
-    </div>
-</div>
+# systemd使用说明
+
+## 脚本生成变量
+```json
+@Html.Raw(voJson)
+```
+
+## 使用前提
+```bash
+1 .NET SDK installed >=6.0
+2 一个可以正常运行的发布(linux-based)
+```
+
+## 脚本内容
+
+```ini
+[Unit]
+Description=@vo.my_srv_desc
+
+[Service]
+Type=notify
+WorkingDirectory=@vo.my_srv_dir
+ExecStart=@vo.my_exe_start
+SyslogIdentifier=@vo.my_srv_name
+User=@vo.my_user
+Restart=@vo.my_restart_type
+RestartSec=@vo.my_restart_sec
+@foreach (var my_srvice_ext in vo.my_srvice_exts)
+{
+    @Html.Raw($"{my_srvice_ext}{Environment.NewLine}")
+}
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## 安装示例
+
+```bash
+sudo cp @(saveTo) @(copyTo)
+sudo systemctl daemon-reload
+sudo systemctl restart @srv_file_name
+sudo systemctl status @srv_file_name
+@foreach (var my_port in vo.my_ports)
+{
+    @Html.Raw($"sudo firewall-cmd --zone=public --add-port {my_port}/tcp --permanent{Environment.NewLine}");
+}
+sudo firewall-cmd --reload
+```
+
+## 常用命令
+
+```bash
+# 立即启动一个服务
+$ sudo systemctl start @srv_file_name
+# 立即停止一个服务
+$ sudo systemctl stop @srv_file_name
+# 重启一个服务
+$ sudo systemctl restart @srv_file_name
+# 杀死一个服务的所有子进程
+$ sudo systemctl kill @srv_file_name
+# 重新加载一个服务的配置文件
+$ sudo systemctl reload @srv_file_name
+# 重载所有修改过的配置文件
+$ sudo systemctl daemon-reload
+# 显示某个 Unit 的所有底层参数
+$ systemctl show @srv_file_name
+# 显示某个 Unit 的指定属性的值
+$ systemctl show -p CPUShares @srv_file_name
+# 设置某个 Unit 的指定属性
+$ sudo systemctl set-property @srv_file_name CPUShares=500
+```
+
+## 手动测试
+```bash
+# 修改启动权限
+chmod +x @vo.my_srv_name
+# 启动后台运行
+nohup ./@vo.my_srv_name >/dev/null 2>&1 &
+# 查看进程
+ps ax | grep -e @vo.my_srv_name | grep -v grep
+# 权限指令
+#echo 123 | sudo -S systemctl status @vo.my_srv_name
+echo {password} | sudo -S {command}
+
+```
