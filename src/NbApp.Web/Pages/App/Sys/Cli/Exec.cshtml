@@ -1,0 +1,34 @@
+﻿@page
+@using NbApp.Srvs.DotnetCli;
+@using System.Diagnostics;
+@{
+    var dotnetCliWrap = DotnetCliWrap.Instance;
+    var tabDict = new Dictionary<string, MyCliCommand>();
+
+    var cliCmd =  dotnetCliWrap.CreateCommand("git", "status");
+    var exMessage = "";
+    var outputLines = "";
+    try
+    {
+        cliCmd = await cliCmd.ExecuteBufferedAsync(false);
+        var output = cliCmd.Success ? cliCmd.GetOutput() : cliCmd.GetError();
+        outputLines = output.Replace("\r", "");
+    }
+    catch (Exception ex)
+    {
+        exMessage = ex.Message;
+    }
+}
+<div class="card m-3">
+    <h5 class="card-header">执行指令</h5>
+    <div class="card-body">
+        <pre><code class="language-json">@Html.Raw(cliCmd.ToJson(true))</code></pre>
+    </div>
+</div>
+<hr />
+<div class="card m-3">
+    <h5 class="card-header">执行结果</h5>
+    <div class="card-body">
+        <pre><code class="language-shell">@Html.Raw(outputLines)</code></pre>
+    </div>
+</div>
