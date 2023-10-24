@@ -5,7 +5,6 @@
     <RootNamespace>NbApp.Web</RootNamespace>
     <AssemblyName>$(MyAssemblyPrefix).Web</AssemblyName>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.33.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.22" />
@@ -13,13 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NbApp.Shared\NbApp.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Pages\App\Sys\Cli\Index.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
   
   <Target Name="MyCopyContentAfterPublish" AfterTargets="Publish">

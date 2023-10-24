@@ -5,10 +5,15 @@
 @{
     var input = $"{this.Model.Target} {this.Model.Arguments}";
     var output = $"{this.Model.Output}";
+    var shellExecModel = ShellExecModel.Create(input, output);
+    if (this.Model.CliCmdResult != null)
+    {
+        shellExecModel.Input = $"{this.Model.Target} {this.Model.CliCmdResult.Arguments}";
+        shellExecModel.Success = this.Model.CliCmdResult.Success;
+    }
 }
 
 @functions {
-
     public class ExecPageModel : PageModel
     {
         [BindProperty]
@@ -21,6 +26,8 @@
 
         [TempData]
         public string cliJson { get; set; }
+
+        public MyCliCommandResult CliCmdResult { get; set; }
 
         public void OnGet()
         {
@@ -35,9 +42,10 @@
                 if (cliCmdResult != null)
                 {
                     Target = cliCmdResult.Target;
-                    Arguments = cliCmdResult.Arguments;
+                    Arguments = string.Join('\n', cliCmdResult.ArgumentItems);
                     Output = cliCmdResult.Output;
                 }
+                CliCmdResult = cliCmdResult;
             }
             Console.WriteLine($"OnGet: {Target} {Arguments} {Output}");
         }
@@ -45,7 +53,10 @@
         public async Task<IActionResult> OnPost()
         {
             //todo: validate
-            var cliCmd = MyCliHelper.Instance.CreateCommand(Target, Arguments);
+            var cliHelper = MyCliHelper.Instance;
+            var argumentsArray = cliHelper.ParseToArgumentsArray(Arguments, '\n');
+            Console.WriteLine($"OnPost: {Target} {Arguments} => {argumentsArray.ToJson()}");
+            var cliCmd = cliHelper.CreateCommand(Target, argumentsArray);
             var cliCmdResult = await cliCmd.ExecuteBufferedAsync(false);
             TempData["cliJson"] = cliCmdResult.ToJson();
             return RedirectToPage("Exec");
@@ -53,17 +64,7 @@
     }
 }
 
-<div class="card m-3">
-    <h5 class="card-header">执行脚本</h5>
-    <div class="card-body">
-        <pre><code class="language-shell">@Html.Raw(input) </code></pre>
-    </div>
-    <h5 class="card-header">执行结果</h5>
-    <div class="card-body">
-        <pre><code class="language-shell">@Html.Raw(output)</code></pre>
-    </div>
-</div>
-<hr />
+<partial name="Shell/_ShellExec" model="shellExecModel"></partial>
 <div class="card m-3">
     <h5 class="card-header">脚本参数</h5>
     <div class="card-body">
@@ -81,9 +82,10 @@
                     参数:
                 </label>
                 <div class="layui-input-block">
-                    <input type="text" name="Arguments" required lay-verify="required" placeholder="请输入参数" autocomplete="off" class="layui-input" asp-for="Arguments">
+                    <textarea placeholder="请输入参数，多个参数请换行" class="layui-textarea" autocomplete="off" name="Arguments" asp-for="Arguments"></textarea>
                 </div>
             </div>
+
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="formDemo">执行脚本</button>
@@ -93,7 +95,6 @@
         </form>
     </div>
 </div>
-
 
 @section Scripts {
     <script>
@@ -107,12 +108,12 @@
         //Demo
         layui.use('form', function () {
             var form = layui.form;
-
             //监听提交
             form.on('submit(formDemo)', function (data) {
                 //layer.msg(JSON.stringify(data.field));
                 //return false;
                 console.log(data.field);
+                var theModel = data.field;
                 return true;
             });
         });

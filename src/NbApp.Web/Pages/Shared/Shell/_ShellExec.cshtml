@@ -1,0 +1,34 @@
+﻿@model ShellExecModel
+@{
+    var vo = this.Model;
+    var input = vo.Input;
+    var output = vo.Output;
+    var execState = "未执行";
+    if (vo.Success.HasValue)
+    {
+        execState = vo.Success.Value ? "执行成功" : "执行失败";
+    }
+    output = $"# {execState}{Environment.NewLine}{output}";
+}
+
+<div class="card m-3">
+    <h5 class="card-header">
+        执行脚本
+        @if (execState == "执行成功")
+        {
+            <i class="layui-icon layui-icon-ok" style="color: green; font-weight: bold"></i>
+        }
+        else if (execState == "执行失败")
+        {
+            <i class="layui-icon layui-icon-close" style="color: red; font-weight: bold"></i>
+        }
+        else
+        {
+            <i class="layui-icon layui-icon-play" style="color: green; font-weight: bold"></i>
+        }
+    </h5>
+    <div class="card-body">
+        <pre><code class="language-shell">@input </code></pre>
+        <pre><code class="language-shell">@output</code></pre>
+    </div>
+</div>
