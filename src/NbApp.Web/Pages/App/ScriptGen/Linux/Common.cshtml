@@ -1,8 +1,8 @@
 ﻿@page
 @using System.IO;
 @{
-    var systemdSetting = SystemdSetting.CreateDefault();
-    var vo = SystemdSetting.CreateDefault();
+    var systemdSetting = SystemdGenerateModel.CreateForCurrent();
+    var vo = SystemdGenerateModel.CreateForCurrent();
     var title = "常用脚本";
 }
 <article class="blog-post">

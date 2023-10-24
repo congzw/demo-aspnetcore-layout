@@ -1,0 +1,27 @@
+﻿@model SystemdTemplateVo
+@{
+    var vo = this.Model;
+    if (vo == null)
+    {
+        return;
+    }
+    var execStart = System.IO.Path.Combine(vo.my_srv_dir, vo.my_srv_name);
+}
+[Unit]
+Description=@vo.my_srv_name
+
+[Service]
+Type=notify
+WorkingDirectory=@vo.my_srv_dir
+ExecStart=@execStart
+SyslogIdentifier=@vo.my_srv_name
+User=@vo.my_user
+Restart=@vo.my_restart_type
+RestartSec=@vo.my_restart_sec
+@foreach (var my_srvice_ext in vo.my_srvice_exts)
+{
+    @Html.Raw($"{my_srvice_ext}{Environment.NewLine}")
+}
+
+[Install]
+WantedBy=multi-user.target

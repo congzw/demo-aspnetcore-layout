@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NbApp.Web.Models
 {
-    public class SystemdSetting
+    public class SystemdGenerateModel
     {
         public string my_srv_dir { get; set; }
         public string my_srv_name { get; set; }
@@ -23,12 +23,12 @@ namespace NbApp.Web.Models
 
         internal string EntryAssemblyLocation { get; set; }
 
-        public static SystemdSetting CreateDefault()
+        public static SystemdGenerateModel CreateForCurrent()
         {
             var assm = Assembly.GetEntryAssembly();
             var assmLocation = assm.Location;
 
-            var item = new SystemdSetting();
+            var item = new SystemdGenerateModel();
             item.EntryAssemblyLocation = assmLocation;
             item.my_srv_dir = Path.GetDirectoryName(assmLocation);
             item.my_srv_name = Path.GetFileNameWithoutExtension(assmLocation);
@@ -44,11 +44,10 @@ namespace NbApp.Web.Models
             item.my_srvice_exts.Add("KillSignal=SIGINT");
             item.my_srvice_exts.Add("Environment=DOTNET_ROOT=/opt/media/dotnet/");
 
-            var saveTo = Path.Combine(item.my_srv_dir, "_autorun", "linux-x64", item.my_srv_file_name);
+            var saveTo = Path.Combine(item.my_srv_dir, "script-files", "linux", "systemd", item.my_srv_file_name);
             item.my_copy_from = saveTo;
 
-            var rootDir = new DirectoryInfo("/");
-            var copyTo = Path.Combine(rootDir.FullName, "ect", "systemd", "system", item.my_srv_file_name);
+            var copyTo = Path.Combine("/", "ect", "systemd", "system", item.my_srv_file_name);
             item.my_copy_to = copyTo;
             return item;
         }

@@ -25,6 +25,7 @@
     <link href="~/libs/prism/theme/ocodia.css" rel="stylesheet" />
     <link href="~/app/css/layout.css" rel="stylesheet" />
     @await RenderSectionAsync("Styles", required: false)
+    <script src="~/libs/layui/layui.js"></script>
 </head>
 <body class="d-flex flex-column h-100">
     <header>
@@ -55,7 +56,6 @@
     </footer>
     <script src="~/libs/jquery/jquery.min.js"></script>
     <script src="~/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/libs/layui/layui.js"></script>
     <script src="~/libs/prism/prism.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <partial name="_DebugInfo"></partial>
