@@ -1,0 +1,104 @@
+﻿@page
+@using NbApp.Srvs.RuntimeFiles;
+@model SaveFilePageModel
+@{
+    var title = "文件保存";
+    this.ViewBag.Title = title;
+
+    var formVo = this.Model?.FormVo;
+    if (formVo == null)
+    {
+        return;
+    }
+
+}
+
+@functions {
+    public class SaveFilePageModel : PageModel
+    {
+        [TempData]
+        public string _formVoJson { get; set; }
+        public SaveFileFormVo FormVo { get; set; }
+        public void OnGet()
+        {
+            if (string.IsNullOrWhiteSpace(_formVoJson))
+            {
+                FormVo = new SaveFileFormVo();
+            }
+            else
+            {
+                FormVo = _formVoJson.FromJson<SaveFileFormVo>(null);
+            }
+        }
+
+        public async Task<IActionResult> OnPostSave([FromForm] SaveFileFormVo vo)
+        {
+            await Task.CompletedTask;
+
+            //todo validate
+            var fileHelper = RuntimeFileHelper.Instance;
+            var theFile = fileHelper.Create(vo.SaveTo, vo.FileName);
+            await theFile.SaveContentIf(vo.FileContent);
+            vo.Link = theFile.Link;
+
+            var _formVoJson = vo.ToJson();
+            Console.WriteLine($"OnPostSave: {_formVoJson}");
+            TempData["_formVoJson"] = _formVoJson;
+            return RedirectToPage("SaveFile");
+        }
+    }
+
+    public class SaveFileFormVo
+    {
+        public string FileName { get; set; } = "readme.md";
+        public string SaveTo { get; set; } = "generate-files/foo/";
+        public string FileContent { get; set; } = "";
+        public string Link { get; set; }
+        public int FileContentRows => string.IsNullOrWhiteSpace(FileContent) ? 0 : FileContent.Split('\n').Length;
+    }
+}
+
+<div class="card m-3">
+    <h5 class="card-header">@title</h5>
+    <div class="card-body">
+        <form class="layui-form layui-form-pane" action="./SaveFile?handler=Save" method="post">
+
+            @if (!string.IsNullOrWhiteSpace(formVo.Link))
+            {
+                <div class="layui-form-item">
+                    <a href="@formVo.Link" target="_blank" class="layui-btn  layui-btn-primary layui-border layui-btn-fluid">
+                        点击访问 @formVo.Link<i class="bi-link" style="padding-left:2px;"></i>
+                    </a>
+                </div>
+            }
+
+            <div class="layui-form-item">
+                <label for="SaveTo" class="layui-form-label">
+                    文件位置:
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" required lay-verify="required" placeholder="文件位置" autocomplete="off" class="layui-input" name="SaveTo" value="@formVo.SaveTo">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="FileName" class="layui-form-label">
+                    文件名称:
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" required lay-verify="required" placeholder="文件名称" autocomplete="off" class="layui-input" name="FileName" value="@formVo.FileName">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <div class="layui-input-block">
+                    <textarea required lay-verify="required" placeholder="文件内容" class="layui-textarea" autocomplete="off" name="FileContent" rows="@formVo.FileContentRows">@formVo.FileContent</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit lay-filter="formSave">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </form>
+    </div>
+</div>

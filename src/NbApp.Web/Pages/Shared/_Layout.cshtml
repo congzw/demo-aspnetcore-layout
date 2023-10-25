@@ -26,6 +26,9 @@
     <link href="~/app/css/layout.css" rel="stylesheet" />
     @await RenderSectionAsync("Styles", required: false)
     <script src="~/libs/layui/layui.js"></script>
+    <script>
+        window.myGlobal = {}; 
+    </script>
 </head>
 <body class="d-flex flex-column h-100">
     <header>
@@ -37,11 +40,11 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <partial name="_PageMenu" model="menuTrees"></partial>
+                <partial name="_LayoutMenu" model="menuTrees"></partial>
             </div>
         </nav>
     </header>
-    <partial name="_PageBreadcrumb" model="menuTrees"></partial>
+    <partial name="_LayoutBreadcrumb" model="menuTrees"></partial>
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -58,6 +61,6 @@
     <script src="~/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/libs/prism/prism.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <partial name="_DebugInfo"></partial>
+    <partial name="_LayoutDebug"></partial>
 </body>
 </html>

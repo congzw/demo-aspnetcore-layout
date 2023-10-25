@@ -9,11 +9,23 @@
     var fileContent = "";
     var htmlContent = "";
     var fileInfo = new System.IO.FileInfo(currentMenuTree.GetFullPath());
+    var languageCss = "language-md";
+    var fileMeta = new Dictionary<string, object>();
     if (fileInfo.Exists)
     {
+        languageCss = "language-" + fileInfo.Extension.ToLower().TrimStart('.');
         date = fileInfo.LastWriteTime.ToShortDateString();
         fileContent = currentMenuTree.LoadFileContent();
-        htmlContent = Markdig.Markdown.ToHtml(fileContent);
+        if (languageCss == "language-md")
+        {
+            htmlContent = Markdig.Markdown.ToHtml(fileContent);
+        }
+
+        fileMeta["name"] = fileInfo.Name;
+        fileMeta["size"] = fileInfo.Length.FormatAsFileSize();
+        fileMeta["update"] = fileInfo.LastWriteTime;
+        fileMeta["create"] = fileInfo.CreationTime;
+        fileMeta["md5"] = HashHelper.Instance.GetMd5().ComputeHashString(fileContent);
     }
 }
 <article class="blog-post">
@@ -29,6 +41,13 @@
         </a>
     </p>
     <hr>
-    <pre><code class="language-json">@Html.Raw(currentMenuTree.ToJson(true))</code></pre>
-    @Html.Raw(htmlContent)
+    <pre><code class="language-json">@Html.Raw(fileMeta.ToJson(true))</code></pre>
+    @if (!string.IsNullOrWhiteSpace(htmlContent))
+    {
+        @Html.Raw(htmlContent)
+    }
+    else
+    {
+        <pre><code class="@languageCss">@fileContent</code></pre>
+    }
 </article>

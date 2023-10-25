@@ -8,10 +8,14 @@
             file_name = value.ToString();
         }
     }
-
     var currentPath = this.ViewBag.currentPath as string;
-    var rootDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "md-files");
+    var rootDir = MyAppContext.Instance.GetRuntimeStaticDirectory("md-files");
     var rootDirInfo = new System.IO.DirectoryInfo(rootDir);
+    if (!rootDirInfo.Exists)
+    {
+        <p>runtime dir not exist: @rootDirInfo.FullName</p>
+        return;
+    }
 
     var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
     var rootPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "app");

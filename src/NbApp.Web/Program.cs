@@ -25,7 +25,6 @@ namespace NbApp.Web
 
             var builder = WebApplication.CreateBuilder(args);
 
-
             SetupAppService.AddTheAppService(builder.Services);
 
             builder.Services
@@ -60,6 +59,7 @@ namespace NbApp.Web
             //}
 
             app.UseStaticFiles();
+            RuntimeStaticFilesSetup.UseRuntimeStatics(app);
             app.UseRouting();
             app.UseAuthorization();
             app.MapRazorPages();

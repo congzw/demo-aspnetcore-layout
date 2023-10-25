@@ -1,0 +1,25 @@
+﻿@model InOutVo
+@{
+    var vo = this.Model;
+    if (vo == null)
+    {
+        return;
+    }
+
+    var input = vo.Input;
+    var onput = vo.Output;
+}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">输入</h5>
+            <div class="card-body"><pre><code class="language-json">@input</code></pre></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">输出</h5>
+            <div class="card-body"><pre><code class="language-shell">@onput</code></pre></div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+﻿@model SystemdServiceVo
+@{
+    var vo = this.Model;
+    if (vo == null)
+    {
+        return;
+    }
+    var execStart = $"{vo.srv_dir.TrimEnd('/')}/{vo.srv_name}";
+}
+[Unit]
+Description=@vo.srv_name
+
+[Service]
+Type=notify
+WorkingDirectory=@vo.srv_dir
+ExecStart=@execStart
+SyslogIdentifier=@vo.srv_name
+User=@vo.user
+Restart=@vo.restart_type
+RestartSec=@vo.restart_sec
+@foreach (var item in vo.srvice_exts)
+{
+    @Html.Raw($"{item}{Environment.NewLine}")
+}
+
+[Install]
+WantedBy=multi-user.target

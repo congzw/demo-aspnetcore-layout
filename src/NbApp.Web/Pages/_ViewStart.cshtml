@@ -5,7 +5,7 @@
     var request = this.ViewContext.HttpContext.Request;
 
     ViewBag.theAppSetting = theAppSetting.Value;
-    ViewBag.currentPath = $"{request.PathBase}{request.Path}".TrimEnd('/').ToLower();
     ViewBag.viewPath = this.ViewContext.View.Path;
     ViewBag.routeData = this.ViewContext.RouteData;
+    ViewBag.currentPath = $"{request.PathBase}{request.Path}".TrimEnd('/').ToLower();
 }

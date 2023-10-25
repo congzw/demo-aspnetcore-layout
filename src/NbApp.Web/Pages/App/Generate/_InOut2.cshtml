@@ -1,0 +1,34 @@
+﻿@model InOutVo
+@{
+    var vo = this.Model;
+    if (vo == null)
+    {
+        return;
+    }
+
+    var input = vo.Input;
+    var onput = vo.Output;
+}
+<div class="card">
+    <div class="card-body">
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-tab-input" data-bs-toggle="tab" data-bs-target="#nav-content-input" type="button" role="tab" aria-controls="nav-content-input" aria-selected="true">
+                    输入
+                </button>
+                <button class="nav-link" id="nav-tab-output" data-bs-toggle="tab" data-bs-target="#nav-content-output" type="button" role="tab" aria-controls="nav-content-output" aria-selected="false">
+                    输出
+                </button>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-content-input" role="tabpanel" aria-labelledby="nav-tab-input" tabindex="0">
+                <pre><code class="language-json">@input</code></pre>
+            </div>
+            <div class="tab-pane fade" id="nav-content-output" role="tabpanel" aria-labelledby="nav-tab-output" tabindex="1">
+                <pre><code class="language-shell">@onput</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+

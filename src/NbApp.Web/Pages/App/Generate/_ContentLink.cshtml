@@ -1,0 +1,55 @@
+﻿@model ContentLinkModel
+@{
+    var vo = this.Model;
+    if (vo == null)
+    {
+        return;
+    }
+
+    if (string.IsNullOrWhiteSpace(vo.FileFullPath))
+    {
+        return;
+    }
+
+    if (!System.IO.File.Exists(vo.FileFullPath))
+    {
+        PathHelper.Instance.MakeSureParentDirExist(vo.FileFullPath);
+        await System.IO.File.WriteAllTextAsync(vo.FileFullPath, vo.Content, System.Text.Encoding.UTF8);
+    }
+    else
+    {
+        var content = System.IO.File.ReadAllText(vo.FileFullPath);
+        var md5 = HashHelper.Instance.GetMd5();
+        var oldHash = md5.ComputeHashString(content);
+        var newHash = md5.ComputeHashString(vo.Content);
+        if (oldHash != newHash)
+        {
+            PathHelper.Instance.MakeSureParentDirExist(vo.FileFullPath);
+            await System.IO.File.WriteAllTextAsync(vo.FileFullPath, vo.Content, System.Text.Encoding.UTF8);
+        }
+    }
+
+    var theAppSetting = ViewBag.theAppSetting as TheAppSetting;
+    var debugMode = theAppSetting.DebugMode;
+}
+@if (debugMode)
+{
+    <script>
+        if (window.myGlobal) {
+            window.myGlobal.contentLinkVo = @Html.Raw(vo.ToJson(true));
+        }
+    </script>
+}
+<div class="card m-3">
+    <h5 class="card-header"><a href="@vo.Link" target="_blank">@vo.Title<i class="bi-link" style="padding-left:2px;"></i></a></h5>
+    @if (vo.LanguageCss == "language-md")
+    {
+        <div class="card-body">
+            @Html.Raw(Markdig.Markdown.ToHtml(vo.Content))
+        </div>
+    }
+    else
+    {
+        <div class="card-body"><pre><code class="@vo.LanguageCss">@vo.Content</code></pre></div>
+    }
+</div>

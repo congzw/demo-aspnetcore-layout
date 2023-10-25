@@ -14,7 +14,7 @@
         currentPath = $"{request.PathBase}{request.Path}".ToLower();
     }
     //todo: read from config
-    var autoAppPages = new string[] { "Sys", "ScriptGen", "Generate" };
+    var autoAppPages = new string[] { "Sys", "Generate" };
 }
 @functions {
 
@@ -85,10 +85,10 @@
         @{
             var rootPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app");
             var mdPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/md-doc");
-            var scriptPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/script-doc");
+            var genPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "/app/gen-doc");
             RenderFixMenu(rootPath, "App", currentPath);
             RenderFixMenu(mdPath, "MdDoc", currentPath);
-            RenderFixMenu(scriptPath, "ScriptDoc", currentPath);
+            RenderFixMenu(genPath, "GenDoc", currentPath);
         }
         @foreach (var autoAppPage in autoAppPages)
         {

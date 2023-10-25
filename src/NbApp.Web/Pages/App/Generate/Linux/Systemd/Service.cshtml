@@ -1,0 +1,78 @@
+﻿@page
+@using System.IO;
+@model ServicePageModel
+
+@{
+    var getVo = this.Model.GetVo;
+
+    var argsJson = getVo.ToJson(true);
+    var argsJsonRow = argsJson.Split('\n').Length;
+    var rawContent = await this.Html.GetPartialContent(this.HtmlEncoder, "_Service", getVo);
+
+    var inoutVo = new InOutVo() {
+        Input = argsJson,
+        Output = rawContent
+    };
+}
+
+@functions {
+    public class ServicePageModel : PageModel
+    {
+        [TempData]
+        public string _argsJson { get; set; }
+        public SystemdServiceVo GetVo { get; set; }
+        public void OnGet()
+        {
+            if (string.IsNullOrWhiteSpace(_argsJson))
+            {
+                GetVo = SystemdServiceVo.Create("/home/a/media/demo_web_srv/", "Demo.Web");
+            }
+            else
+            {
+                GetVo = _argsJson.FromJson<SystemdServiceVo>(null);
+            }
+        }
+
+        [BindProperty]
+        public string ArgsJson { get; set; }
+        public async Task<IActionResult> OnPostGenerate()
+        {
+            //todo: validate
+            await Task.CompletedTask;
+            Console.WriteLine($"OnPostGenerate: {ArgsJson}");
+            TempData["_argsJson"] = ArgsJson;
+            return RedirectToPage("Service");
+        }
+    }
+}
+
+<article class="blog-post">
+    <h2 class="blog-post-title">生成Systemd服务脚本</h2>
+    <p class="blog-post-meta mt-1">
+        <span style="color: cornflowerblue;">
+            当前时间: <i class="bi-alarm"></i>
+            @DateTime.Now
+        </span>
+    </p>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <form class="layui-form layui-form-pane" action="./Service?handler=Generate" method="post">
+                <div class="layui-form-item layui-form-text">
+                    <label for="ArgsJson" class="layui-form-label">
+                        生成参数:
+                    </label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="生成参数(JSON)" class="layui-textarea" autocomplete="off" name="ArgsJson" rows="@argsJsonRow">@argsJson</textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn" lay-submit lay-filter="formGenerate">生成</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr />
+    <partial name="_InOut" model="inoutVo"></partial>
+</article>

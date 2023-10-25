@@ -5,6 +5,10 @@
     <RootNamespace>NbApp.Web</RootNamespace>
     <AssemblyName>$(MyAssemblyPrefix).Web</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\App\Generate\Linux\Systemd\Service.cshtml~RF420b7071.TMP" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.33.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.22" />

@@ -10,10 +10,10 @@
     var request = this.Context.Request;
     var currentPath = $"{request.PathBase}{request.Path}";
     var currentPathQuery = $"{request.PathBase}{request.Path}{request.QueryString}";
-    
+
     var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
     var appName = theAppSetting.AppName;
-    var debugInfo = new
+    var contextInfo = new
     {
         pathBase = request.PathBase.ToString(),
         path = currentPath,
@@ -27,8 +27,11 @@
 @if (theAppSetting.DebugMode)
 {
     <script>
-        var debugInfo = @Html.Raw(debugInfo.ToJson(true));
-        debugInfo.hash = window.location.hash;
-        console.log("debugInfo", debugInfo);
+        let contextInfo = @Html.Raw(contextInfo.ToJson(true));
+        contextInfo.hash = window.location.hash;
+        if (window.myGlobal) {
+            window.myGlobal.contextInfo = contextInfo;
+            console.log("myGlobal", window.myGlobal);
+        }
     </script>
 }

@@ -1,0 +1,28 @@
+﻿@page
+@using System.IO;
+@{
+    var title = "systemd服务说明";
+    var rawContent = "";
+    var htmlContent = "";
+
+    using (var sw = new StringWriter())
+    {
+        var partialHtml = await Html.PartialAsync("_Readme");
+        partialHtml.WriteTo(sw, this.HtmlEncoder);
+        rawContent = sw.ToString();
+        htmlContent = Markdig.Markdown.ToHtml(rawContent);
+    }
+
+    var theFile = RuntimeFileHelper.Instance.Create("linux/systemd", "readme.md");
+    var contentLinkVo = ContentLinkModel.Create(theFile.FullPath, theFile.FileName, rawContent, "language-md", theFile.Link);
+}
+<article class="blog-post">
+    <h2 class="blog-post-title">@title</h2>
+    <p class="blog-post-meta">
+        <span style="color: cornflowerblue;">
+            当前时间: <i class="bi-alarm"></i>
+            @DateTime.Now
+        </span>
+    </p>
+    <partial name="_ContentLink" model="contentLinkVo"></partial>
+</article>

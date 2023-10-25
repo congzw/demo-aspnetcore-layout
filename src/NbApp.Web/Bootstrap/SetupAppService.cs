@@ -11,7 +11,6 @@ namespace NbApp.Web.Bootstrap
         {
             TheAppSettingSetup.Setup(services);
             WebRunInfo.Instance.Setup(services);
-
             return services;
         }
     }

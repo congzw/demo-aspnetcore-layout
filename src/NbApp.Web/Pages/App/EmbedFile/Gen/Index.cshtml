@@ -1,4 +1,4 @@
-﻿@page "/app/script-doc/{**file_name}"
+﻿@page "/app/gen-doc/{**file_name}"
 @{
     var file_name = "";
     if (this.RouteData.Values.TryGetValue("file_name", out var value))
@@ -10,13 +10,18 @@
     }
 
     var currentPath = this.ViewBag.currentPath as string;
-    var rootDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "script-files");
+    var rootDir = MyAppContext.Instance.GetRuntimeStaticDirectory("generate-files");
     var rootDirInfo = new System.IO.DirectoryInfo(rootDir);
+    if (!rootDirInfo.Exists)
+    {
+        <p>runtime dir not exist: @rootDirInfo.FullName</p>
+        return;
+    }
 
     var theAppSetting = this.ViewBag.theAppSetting as TheAppSetting;
     var rootPath = PageMenuTree.CombineHerf(theAppSetting.PathBase, "app");
 
-    var rootMenuTree = PageMenuTreeHelper.Instance.LoadForMdFiles(rootPath, "script-doc", rootDirInfo);
+    var rootMenuTree = PageMenuTreeHelper.Instance.LoadForStaticFiles(rootPath, "gen-doc", rootDirInfo);
     var currentMenuTree = rootMenuTree.GetAllDescendants().FirstOrDefault(x => x.Herf.MyEquals(currentPath)) ?? rootMenuTree;
     var theEntryModel = new { rootMenuTree, currentMenuTree };
 

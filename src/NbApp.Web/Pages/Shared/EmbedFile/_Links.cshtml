@@ -22,13 +22,13 @@
     {
         <li>
             @if (item.IsDirectory)
-            {
-                //<span href="@item.Herf">@item.Title</span>
-                <a href="@item.Herf">@item.Title</a>
+            {                
+                //<i class="bi-folder"></i>
+                //<a href="@item.Herf">@item.Title</a>
             }
             else
             {
-                <a href="@item.Herf">@item.Title</a>
+                <a href="@item.Herf">@System.IO.Path.GetFileName(item.GetFullPath())</a>
             }
             @if (item.GetAllDescendants().Count() > 0)
             {

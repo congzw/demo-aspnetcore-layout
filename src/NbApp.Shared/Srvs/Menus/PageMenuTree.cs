@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -106,6 +107,10 @@ namespace NbApp.Srvs.Menus
     {
         public static PageMenuTreeHelper Instance = new PageMenuTreeHelper();
         internal IDictionary<string, PageMenuTree> Cache { get; set; } = new Dictionary<string, PageMenuTree>(StringComparer.OrdinalIgnoreCase);
+        public void ClearCache()
+        {
+            Cache.Clear();
+        }
 
         public PageMenuTree Load(
             string parentPath,
