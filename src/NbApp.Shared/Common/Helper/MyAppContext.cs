@@ -21,6 +21,11 @@ namespace Common
         public static MyAppContext SetupFileWatch(this MyAppContext ctx)
         {
             var rootPath = ctx.GetRuntimeStaticDirectory();
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath);
+            }
+
             var watcher = new FileSystemWatcher(rootPath, "*.*");
 
             //todo: fix bugs!
