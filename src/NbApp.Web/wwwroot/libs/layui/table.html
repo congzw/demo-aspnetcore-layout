@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>测试 - Layui</title>
+    <link rel="stylesheet" href="./css/layui.css">
+</head>
+<body>
+
+    <div class="layui-container">
+
+        <div class="layui-btn-container">
+            <button class="layui-btn" my-event="renderData">已知数据渲染</button>
+        </div>
+
+
+        <div class="layui-btn-container">
+            <button class="layui-btn" lay-on="parseTable">转换为数据表格</button>
+        </div>
+        <table lay-filter="parse-table-demo">
+            <thead>
+                <tr>
+                    <th lay-data="{field:'name', width:150}">人物</th>
+                    <th lay-data="{field:'nation', width:150}">民族</th>
+                    <th lay-data="{field:'maxim', minWidth: 180}">格言</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>孔子</td>
+                    <td>华夏</td>
+                    <td>有朋至远方来，不亦乐乎</td>
+                </tr>
+                <tr>
+                    <td>孟子</td>
+                    <td>华夏</td>
+                    <td>穷则独善其身，达则兼济天下</td>
+                </tr>
+                <tr>
+                    <td>庄子</td>
+                    <td>华夏</td>
+                    <td>朴素而天下莫能与之争美</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr />
+        <table class="layui-hide" id="table-demo2"></table>
+
+    </div>
+
+    <!-- body 末尾处引入 layui -->
+    <script src="./layui.js"></script>
+    <script>
+layui.use(function () {
+            var util = layui.util;
+            var table = layui.table;
+
+            // 触发事件
+            util.on('my-event', {
+                'renderData': function () {                    
+                    // 已知数据渲染
+                    var inst = table.render({
+                        elem: '#table-demo2',
+                        cols: [[ //标题栏
+                            { field: 'id', title: 'ID', width: 80, sort: true },
+                            { field: 'username', title: '用户', width: 120 },
+                            { field: 'sign', title: '签名', minWidth: 160 },
+                            { field: 'sex', title: '性别', width: 80 },
+                            { field: 'city', title: '城市', width: 100 },
+                            { field: 'experience', title: '积分', width: 80, sort: true }
+                        ]],
+                        data: [{ // 赋值已知数据
+                            "id": "10001",
+                            "username": "张三1",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "116"
+                        }, {
+                            "id": "10002",
+                            "username": "张三2",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "12",
+                            "LAY_CHECKED": true
+                        }, {
+                            "id": "10003",
+                            "username": "张三3",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "65"
+                        }, {
+                            "id": "10004",
+                            "username": "张三4",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "777"
+                        }, {
+                            "id": "10005",
+                            "username": "张三5",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "86"
+                        }, {
+                            "id": "10006",
+                            "username": "张三6",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "12"
+                        }, {
+                            "id": "10007",
+                            "username": "张三7",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "16"
+                        }, {
+                            "id": "10008",
+                            "username": "张三8",
+                            "sex": "男",
+                            "city": "浙江杭州",
+                            "sign": "人生恰似一场修行",
+                            "experience": "106"
+                        }],
+                        //skin: 'line', // 表格风格
+                        //even: true,
+                        page: true, // 是否显示分页
+                        limits: [5, 10, 15],
+                        limit: 5 // 每页默认显示的数量
+                    });
+                }
+            });
+
+            util.on('lay-on', {
+                parseTable: function () {
+                    // 转化静态表格
+                    table.init('parse-table-demo', {
+                        // height: ''
+                    });
+                }
+            });
+
+});
+
+
+
+    </script>
+</body>
+</html>

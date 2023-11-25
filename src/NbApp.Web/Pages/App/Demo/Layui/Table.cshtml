@@ -1,0 +1,64 @@
+﻿@page
+@using NbApp.Srvs.UI.Layui;
+@using System.Text.Json;
+@{
+    var demoTable = DemoTableData.CreateDemoTable();
+    var jsonOptions = new JsonSerializerOptions()
+    {
+        //PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        //DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+    };
+    var json = JsonSerializer.Serialize(demoTable, jsonOptions);
+    var rawJson = Html.Raw(json);
+}
+<div class="card m-3">
+    <h5 class="card-header">数据展示</h5>
+    <div class="card-body">
+        <button class="layui-btn" my-event="renderData">已知数据渲染</button>
+        <hr />
+        <table class="layui-hide" id="demo-table"></table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        var demoTable = @rawJson;
+        var data = demoTable.data;
+        //var cols = demoTable.cols;
+        var cols = [
+            { field: 'Id', title: '主键', sort :true },
+            { field: 'Title', title: '标题', sort: true },
+            { field: 'CreateAt', title: '创建日期', sort: true },
+        ];
+
+        layui.use(function () {
+
+            var util = layui.util;
+            var table = layui.table;
+            var layer = layui.layer;
+
+            // 欢迎信息
+            layer.msg('Hello World', { icon: 6 });
+
+
+            // 触发事件
+            util.on('my-event', {
+                'renderData': function () {
+                    var inst = table.render({
+                        elem: '#demo-table',
+                        cols: [cols],
+                        data: data,
+                        skin: 'line', // 表格风格
+                        //even: true,
+                        page: true, // 是否显示分页
+                        limits: [10, 50, 100],
+                        limit: 10 // 每页默认显示的数量
+                    });
+                }
+            });
+
+        });
+
+    </script>
+}
