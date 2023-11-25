@@ -1,30 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <Import Project="..\build-info.props" />
+	<Import Project="..\build-info.props" />
+	<Import Project="..\build-info-show.targets" />
 
-  <PropertyGroup>
-    <RootNamespace>NbApp.Web</RootNamespace>
-    <AssemblyName>$(MyAssemblyPrefix).Web</AssemblyName>
-  </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>NbApp.Web</RootNamespace>
+		<AssemblyName>$(MyAssemblyPrefix).Web</AssemblyName>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Pages\App\Generate\Linux\Systemd\Service.cshtml~RF420b7071.TMP" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Markdig" Version="0.33.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.22" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Pages\App\Generate\Linux\Systemd\Service.cshtml~RF420b7071.TMP" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Markdig" Version="0.33.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.22" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NbApp.Shared\NbApp.Shared.csproj" />
-  </ItemGroup>
-  
-  <Target Name="MyCopyContentAfterPublish" AfterTargets="Publish">
-    <ItemGroup>
-      <MyPages Include="Pages\**" />
-    </ItemGroup>
-    <Message Text="MyCopyContentAfterPublish Begin" Importance="High" />
-    <Copy SourceFiles="@(MyPages)" DestinationFolder="$(PublishDir)%(MyPages.RelativeDir)" />
-    <Message Text="MyCopyContentAfterPublish End" Importance="High" />
-  </Target>
-  
+	<ItemGroup>
+		<ProjectReference Include="..\NbApp.Shared\NbApp.Shared.csproj" />
+	</ItemGroup>
+
+	<Target Name="MyCopyContentAfterPublish" AfterTargets="Publish">
+		<ItemGroup>
+			<MyPages Include="Pages\**" />
+		</ItemGroup>
+		<Message Text="MyCopyContentAfterPublish Begin" Importance="High" />
+		<Copy SourceFiles="@(MyPages)" DestinationFolder="$(PublishDir)%(MyPages.RelativeDir)" />
+		<Message Text="MyCopyContentAfterPublish End" Importance="High" />
+	</Target>
+	
 </Project>

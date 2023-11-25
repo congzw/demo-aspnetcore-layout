@@ -1,0 +1,8 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<Target Name="ShowBuildInfos" BeforeTargets="Build">
+		<Message Importance="high" Text="TargetFramework: $(TargetFramework)"></Message>
+		<Exec Command="dotnet --version"></Exec>
+	</Target>
+
+</Project>
